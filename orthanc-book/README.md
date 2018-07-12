@@ -1,7 +1,7 @@
 基本信息
 ===================
 
-Orthanc是轻量级的，DICOM厂商中立的存档的RESTful。 
+Orthanc是轻量级的，DICOM厂商中立存档的RESTful。 
 
 关于Orthanc的基本信息可以浏览它的 [官方网站](http://www.orthanc-server.com/)。
 
