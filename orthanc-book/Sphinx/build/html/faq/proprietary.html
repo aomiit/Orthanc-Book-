@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Software X from vendor Y is not compatible with Orthanc &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Orthanc Explorer is not user-friendly enough for my use" href="improving-interface.html" />
+    <link rel="prev" title="Finding samples for the REST API" href="rest-samples.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="software-x-from-vendor-y-is-not-compatible-with-orthanc">
+<span id="proprietary"></span><h1>Software X from vendor Y is not compatible with Orthanc<a class="headerlink" href="#software-x-from-vendor-y-is-not-compatible-with-orthanc" title="Permalink to this headline">¶</a></h1>
+<p>First of all, make sure to read at least the following sections from
+the <a class="reference internal" href="../faq.html#faq"><span class="std std-ref">常见问题</span></a>:</p>
+<ul class="simple">
+<li><a class="reference internal" href="troubleshooting.html#troubleshooting"><span class="std std-ref">疑难排解</span></a></li>
+<li><a class="reference internal" href="dicom.html#dicom"><span class="std std-ref">Troubleshooting DICOM communications</span></a></li>
+</ul>
+<p>Orthanc is <a class="reference external" href="https://en.wikipedia.org/wiki/Free_and_open-source_software">free and open-source software (FOSS)</a>. FOSS
+protects the digital freedoms of its users, and is freely available to
+each and every user, for any use. As a backbone application for
+medical imaging, the Orthanc project continuously tries and ensures
+best possible compatibility with other FOSS software. To put it in
+other words, we <strong>provide free support for interfacing Orthanc with
+other free and open-source software</strong>. Feel free to discuss
+interoperability problems of Orthanc with other FOSS tools on <a class="reference external" href="https://groups.google.com/forum/#!forum/orthanc-users">our
+discussion group</a>, or to
+introduce <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/issues?status=new&amp;status=open">bug reports</a>
+detailing how to reproduce your problem.</p>
+<p>Independently of FOSS, there exist many proprietary systems for
+medical imaging. Note that proprietary systems might either be paying
+or come gratis (also known as freeware). In either case, they restrict
+the freedoms of their users and, as a consequence, the Orthanc project
+does not have access to a valid license for each software X from any
+vendor Y. This implies that we <strong>do not provide free support for
+proprietary software (including freeware)</strong>.</p>
+<p>If you encounter difficulties while interfacing Orthanc with some
+proprietary software, <strong>contact the commercial support of your
+supplier</strong>. As Orthanc is free and open-source, the support team of
+your supplier can download Orthanc, and can help you solve your
+problem. If some fix is needed in our source code, the Orthanc project
+will happily integrate it within in the Orthanc mainline, provided the
+<strong>patch is explicitly put in the public domain by your vendor</strong>. We
+remind the vendors that, if they distribute a patched version of
+Orthanc to some of their clients as the result of a commercial
+support, the <a class="reference external" href="https://en.wikipedia.org/wiki/GNU_General_Public_License">GPL license</a> of
+Orthanc requires them to <strong>publicly release the source code of this
+derived version of Orthanc</strong>.</p>
+<p>Finally, if you need to complement the commercial services of your
+official supplier, please note that you can also contact a company
+that provides <strong>commercial support on the top of Orthanc</strong>. Currently,
+<a class="reference external" href="http://osimis.io/">Osimis</a> is the only company ensuring such
+corporate services, but others might show up in the future. A <a class="reference external" href="http://www.orthanc-server.com/orthanc-pro.php">contact
+form</a> is available on
+the official Web page of Orthanc.</p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

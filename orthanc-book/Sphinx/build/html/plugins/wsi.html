@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Whole-slide microscopic imaging &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sample Modality Worklists plugin" href="worklists-plugin.html" />
+    <link rel="prev" title="PostgreSQL plugins" href="postgresql.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="whole-slide-microscopic-imaging">
+<span id="wsi"></span><h1><a class="toc-backref" href="#id1">Whole-slide microscopic imaging</a><a class="headerlink" href="#whole-slide-microscopic-imaging" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#whole-slide-microscopic-imaging" id="id1">Whole-slide microscopic imaging</a><ul>
+<li><a class="reference internal" href="#compilation" id="id2">Compilation</a><ul>
+<li><a class="reference internal" href="#static-linking" id="id3">Static linking</a></li>
+<li><a class="reference internal" href="#microsoft-windows" id="id4">Microsoft Windows</a></li>
+<li><a class="reference internal" href="#dynamic-linking" id="id5">Dynamic linking</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage-of-the-plugin" id="id6">Usage of the plugin</a></li>
+<li><a class="reference internal" href="#command-line-tools" id="id7">Command-line tools</a><ul>
+<li><a class="reference internal" href="#transcoding-a-dicom-image" id="id8">Transcoding a DICOM image</a></li>
+<li><a class="reference internal" href="#re-encoding-a-dicom-image" id="id9">Re-encoding a DICOM image</a></li>
+<li><a class="reference internal" href="#proprietary-file-formats" id="id10">Proprietary file formats</a></li>
+<li><a class="reference internal" href="#specifying-a-dicom-dataset" id="id11">Specifying a DICOM dataset</a></li>
+<li><a class="reference internal" href="#converting-dicom-to-tiff" id="id12">Converting DICOM to TIFF</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rest-api" id="id13">REST API</a><ul>
+<li><a class="reference internal" href="#information-about-a-whole-slide-image" id="id14">Information about a whole-slide image</a></li>
+<li><a class="reference internal" href="#decoding-the-individual-tiles" id="id15">Decoding the individual tiles</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<p>The Orthanc project provides three <strong>official tools</strong> to support DICOM
+for whole-slide microscopic imaging (WSI):</p>
+<ol class="arabic simple">
+<li>A so-called “DICOM-izer” command-line tool that converts
+whole-slide images to DICOM series, following <a class="reference external" href="ftp://medical.nema.org/medical/dicom/final/sup145_ft.pdf">Supplement 145</a>.</li>
+<li>A plugin that extends Orthanc with a Web viewer of whole-slide
+images for digital pathology.</li>
+<li>Another command-line tool that converts a DICOM series stored
+inside Orthanc, to a standard hierarchical TIFF image.</li>
+</ol>
+<p>For general information, check out the <a class="reference external" href="http://www.orthanc-server.com/static.php?page=wsi">official homepage of the
+framework</a>.</p>
+<div class="section" id="compilation">
+<h2><a class="toc-backref" href="#id2">Compilation</a><a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="static-linking">
+<h3><a class="toc-backref" href="#id3">Static linking</a><a class="headerlink" href="#static-linking" title="Permalink to this headline">¶</a></h3>
+<p>The procedure to compile the WSI framework is similar of that for the
+<a class="reference internal" href="../users/cookbook.html#binaries"><span class="std std-ref">core of Orthanc</span></a>. The following commands should work
+for every UNIX-like distribution (including GNU/Linux):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># Firstly, compile the command-line tools
+$ mkdir Applications/Build
+$ cd Applications/Build
+$ cmake .. -DSTATIC_BUILD=ON -DCMAKE_BUILD_TYPE=Release
+$ make
+
+# Secondly, compile the viewer plugin
+$ mkdir ../../ViewerPlugin/Build
+$ cd ../../ViewerPlugin/Build
+$ cmake .. -DSTATIC_BUILD=ON -DCMAKE_BUILD_TYPE=Release
+$ make
+</pre></div>
+</div>
+<p>The compilation will produce 3 binaries:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">Applications/Build/OrthancWSIDicomizer</span></code>, which contains the DICOM-izer.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Applications/Build/OrthancWSIDicomToTiff</span></code>, which contains the DICOM-to-TIFF converter.</li>
+<li><code class="docutils literal notranslate"><span class="pre">ViewerPlugin/Build/OrthancWSI</span></code>, which is a shared library containing the viewer plugin for Orthanc.</li>
+</ul>
+</div>
+<div class="section" id="microsoft-windows">
+<h3><a class="toc-backref" href="#id4">Microsoft Windows</a><a class="headerlink" href="#microsoft-windows" title="Permalink to this headline">¶</a></h3>
+<p>Note that pre-compiled binaries for Microsoft Windows <a class="reference external" href="http://www.orthanc-server.com/browse.php?path=/whole-slide-imaging">are available</a>.</p>
+</div>
+<div class="section" id="dynamic-linking">
+<h3><a class="toc-backref" href="#id5">Dynamic linking</a><a class="headerlink" href="#dynamic-linking" title="Permalink to this headline">¶</a></h3>
+<p>If static linking is not desired, here are build instructions for
+Ubuntu 16.04 (provided build dependencies for the <a class="reference internal" href="../faq/compiling.html#compiling"><span class="std std-ref">core of
+Orthanc</span></a> have already been installed):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ sudo apt-get install libopenjpeg-dev
+
+# Firstly, compile the command-line tools
+$ mkdir Applications/Build
+$ cd Applications/Build
+$ cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_SYSTEM_ORTHANC_SDK=OFF
+$ make
+
+# Secondly, compile the viewer plugin
+$ mkdir ../../ViewerPlugin/Build
+$ cd ../../ViewerPlugin/Build
+$ cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_SYSTEM_ORTHANC_SDK=OFF -DALLOW_DOWNLOADS=ON
+$ make
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="usage-of-the-plugin">
+<h2><a class="toc-backref" href="#id6">Usage of the plugin</a><a class="headerlink" href="#usage-of-the-plugin" title="Permalink to this headline">¶</a></h2>
+<p>You of course first have to <a class="reference internal" href="../faq/compiling.html#compiling"><span class="std std-ref">install Orthanc</span></a>. Once
+Orthanc is installed, you must change the <a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">configuration file</span></a> to tell Orthanc where it can find the plugin: This is
+done by properly modifying the <code class="docutils literal notranslate"><span class="pre">Plugins</span></code> configuration option. You
+could for instance use the following configuration file under
+GNU/Linux:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+  &quot;Name&quot; : &quot;MyOrthanc&quot;,
+  [...]
+  &quot;Plugins&quot; : [
+    &quot;/home/user/orthanc-wsi/ViewerPlugin/Build/libOrthancWSI.so&quot;
+  ]
+}
+</pre></div>
+</div>
+<p>Orthanc must of course be restarted after the modification of its
+configuration file. The WSI plugin has no specific configuration
+option.</p>
+<p>Once a <a class="reference internal" href="../dicom-guide.html#model-world"><span class="std std-ref">DICOM series</span></a> is opened using <a class="reference internal" href="../users/cookbook.html#orthanc-explorer"><span class="std std-ref">Orthanc
+Explorer</span></a>, a yellow button entitled <code class="docutils literal notranslate"><span class="pre">Whole-Slide</span>
+<span class="pre">Imaging</span> <span class="pre">Viewer</span></code> will show up for series corresponding to whole-slide
+images. This button will open the WSI viewer for that particular
+series. This behavior can be seen on the Orthanc Explorer interface
+running on our <a class="reference external" href="http://wsi.orthanc-server.com/orthanc/app/explorer.html">WSI demonstration server</a>.</p>
+</div>
+<div class="section" id="command-line-tools">
+<h2><a class="toc-backref" href="#id7">Command-line tools</a><a class="headerlink" href="#command-line-tools" title="Permalink to this headline">¶</a></h2>
+<p>The command-line tools <code class="docutils literal notranslate"><span class="pre">OrthancWSIDicomizer</span></code> and
+<code class="docutils literal notranslate"><span class="pre">OrthancWSIDicomToTiff</span></code> provide documentation of all their options
+if started with the <code class="docutils literal notranslate"><span class="pre">--help</span></code> parameter:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer --help
+$ ./OrthancWSIDicomToTiff --help
+</pre></div>
+</div>
+<p>In this section, we review the most common usages of these tools.</p>
+<div class="section" id="transcoding-a-dicom-image">
+<h3><a class="toc-backref" href="#id8">Transcoding a DICOM image</a><a class="headerlink" href="#transcoding-a-dicom-image" title="Permalink to this headline">¶</a></h3>
+<p>The most simple usage consists in converting some whole-slide image to
+DICOM, then uploading it to Orthanc:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer Source.tif
+</pre></div>
+</div>
+<p>This command will transcode some <a class="reference external" href="https://en.wikipedia.org/wiki/TIFF">hierarchical, tiled TIFF</a> image called <code class="docutils literal notranslate"><span class="pre">Source.tif</span></code>,
+and push the generated DICOM files to the default Orthanc server
+(running on <code class="docutils literal notranslate"><span class="pre">localhost</span></code> and listening to HTTP port <code class="docutils literal notranslate"><span class="pre">8042</span></code>) using
+its <a class="reference internal" href="../users/rest.html#rest"><span class="std std-ref">REST API</span></a>. The log of the command will give you the
+<a class="reference internal" href="../faq/orthanc-ids.html#orthanc-ids"><span class="std std-ref">identifier of the generated series</span></a>, so that you
+can locate it in Orthanc Explorer. This conversion is fast, as no
+re-encoding takes place: If the source TIFF image contains JPEG tiles,
+these tiles will be simply written as such.</p>
+<p>Obviously, you can specify the parameters of the REST API of your
+target Orthanc server:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer Source.tif --orthanc=http://localhost:8042/ --username=orthanc --password=orthanc
+</pre></div>
+</div>
+<p>It is also possible to write the DICOM instances directly onto some
+folder of the filesystem (the target folder must be existing):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer Source.tif --folder=/tmp/dicomized/
+</pre></div>
+</div>
+<p>This command will create a set of files entitled like
+<code class="docutils literal notranslate"><span class="pre">/tmp/dicomized/wsi-XXXXXX.dcm</span></code>. You can modify this pattern using
+the command-line option <code class="docutils literal notranslate"><span class="pre">--folder-pattern</span></code>.</p>
+<p>By default, the DICOM-izer will spread the output series as a set of
+DICOM files whose size stays below 10MB. This prevents the appearance
+of huge files, which speeds up further processing. This behavior can
+be controlled using the <code class="docutils literal notranslate"><span class="pre">--max-size</span></code> command-line option.</p>
+</div>
+<div class="section" id="re-encoding-a-dicom-image">
+<h3><a class="toc-backref" href="#id9">Re-encoding a DICOM image</a><a class="headerlink" href="#re-encoding-a-dicom-image" title="Permalink to this headline">¶</a></h3>
+<p>The section above explained how to transcode whole-slide images,
+without modifying the compression scheme of their individual tiles
+(which is most commonly JPEG). You can instruct the DICOM-izer to
+re-encode each and every individual tile as follows:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer Source.tif --reencode=1 --compression=jpeg2000
+</pre></div>
+</div>
+<p>This example would create a series of DICOM instances encoded using
+the JPEG2k transfer syntax (whose UID is <code class="docutils literal notranslate"><span class="pre">1.2.840.10008.1.2.4.90</span></code>).
+As JPEG2k is not natively supported by many Web browsers, the Web
+viewer plugin would transparently convert such JPEG2k-encoded tiles to
+PNG images.</p>
+<p>It is also possible to re-encode the image so as to reduce disk space
+consumption by changing the JPEG quality:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer Source.tif --reencode=1 --compression=jpeg --jpeg-quality=10
+</pre></div>
+</div>
+<p>The DICOM-izer also allows to re-generate all the multi-resolution
+pyramid. This is extremely importantly to enhance the user experience
+of the Web interface, if the source image only features the finest
+zoom level of the whole-slide image:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer Source.tif --pyramid=1 --smooth=1
+</pre></div>
+</div>
+<p>The number of levels in the pyramid can be controlled using the
+<code class="docutils literal notranslate"><span class="pre">--levels</span></code> command-line option. The <code class="docutils literal notranslate"><span class="pre">--smooth=1</span></code> option tells the
+DICOM-izer to apply <a class="reference external" href="https://en.wikipedia.org/wiki/Gaussian_blur">Gaussian smoothing</a> when re-scaling the
+image, in order to avoid the appearance of aliasing in the
+multi-resolution pyramid. This produces nicer images, at the price of
+higher computation time.</p>
+<p>All the examples described in this section are obviously much more
+CPU-intensive than simple transcoding. The DICOM-izer takes advantage
+in multi-threading to reduce the computation time.  By default, it will
+use half the number of logical CPU cores that are available. This
+behavior can be fine-tuned using command-line option <code class="docutils literal notranslate"><span class="pre">--threads</span></code>.</p>
+</div>
+<div class="section" id="proprietary-file-formats">
+<h3><a class="toc-backref" href="#id10">Proprietary file formats</a><a class="headerlink" href="#proprietary-file-formats" title="Permalink to this headline">¶</a></h3>
+<p>Out-of-the-box, the DICOM-izer supports standard hierarchical TIFF
+images. Some commonplace image formats (PNG and JPEG) can be
+DICOM-ized as well. However, whole-slide images can come in many
+proprietary file formats. To re-encode such images, the DICOM-izer
+relies upon the <a class="reference external" href="http://openslide.org/">OpenSlide toolbox</a>.</p>
+<p>For this feature to work, you have to tell the command-line tool where
+it can find the OpenSlide shared library. GNU/Linux distributions
+generally provide packages containing the OpenSlide shared library
+(e.g. under Debian/Ubuntu, simply install the <code class="docutils literal notranslate"><span class="pre">libopenslide0</span></code>
+package):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer --openslide=libopenslide.so CMU-1-JP2K-33005.svs
+</pre></div>
+</div>
+<p>Pre-compiled Microsoft Windows binaries of this shared library can be
+found on the <a class="reference external" href="http://openslide.org/download/">OpenSlide homepage</a> (Note that
+you should copy all .dll files from the OpenSlide package next to the OrthancWSIDicomizer
+executable):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer --openslide=libopenslide-0.dll CMU-1-JP2K-33005.svs
+</pre></div>
+</div>
+<p>Note that this operation implies the re-encoding of the source image
+from the proprietary file format, which is much more time-consuming
+than simply transcoding a TIFF image.</p>
+</div>
+<div class="section" id="specifying-a-dicom-dataset">
+<h3><a class="toc-backref" href="#id11">Specifying a DICOM dataset</a><a class="headerlink" href="#specifying-a-dicom-dataset" title="Permalink to this headline">¶</a></h3>
+<p>So far, we have only been discussing the whole-slide image by itself,
+and not the <a class="reference internal" href="../dicom-guide.html#dicom-tags"><span class="std std-ref">medical information</span></a> that is associated
+with each DICOM file. The DICOM tags that must be embedded inside the
+generated DICOM series can be specified using the user-friendly JSON
+file format. You would first generate a minimal, sample JSON dataset
+as follows:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer --sample-dataset &gt; dataset.json
+</pre></div>
+</div>
+<p>Secondly, you would edit the just-generated <code class="docutils literal notranslate"><span class="pre">dataset.json</span></code> file
+using any text editor (or any script interfaced with your RIS), so as
+to encode medical information associated with the image
+acquisition. Finally, tell the DICOM-izer where it can find the
+dataset when re-encoding or transcoding the image:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomizer Source.tif --dataset=dataset.json
+</pre></div>
+</div>
+<p>Note that it is always a good idea to check whether all the required
+DICOM tags have been properly provided, e.g. by running the
+<code class="docutils literal notranslate"><span class="pre">dciodvfy</span></code> command-line tool provided by <a class="reference external" href="http://www.dclunie.com/dicom3tools.html">David Clunie</a> that checks the
+compliance of DICOM files.</p>
+</div>
+<div class="section" id="converting-dicom-to-tiff">
+<h3><a class="toc-backref" href="#id12">Converting DICOM to TIFF</a><a class="headerlink" href="#converting-dicom-to-tiff" title="Permalink to this headline">¶</a></h3>
+<p>The whole-slide imaging framework for Orthanc also provides a
+command-line tool that converts some DICOM series, as a standard
+hierarchical, tiled TIFF image. This is important if you wish to
+export some DICOM file to a framework that does not support DICOM
+Supplement 145.</p>
+<p>Here is how you would convert a whole-slide image stored in the
+default Orthanc server:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./OrthancWSIDicomToTiff fdf53e42-06d7377a-c24c59fd-3704e72d-f4c75b68 Target.tif
+</pre></div>
+</div>
+<p>You just have to provide the <a class="reference internal" href="../faq/orthanc-ids.html#orthanc-ids"><span class="std std-ref">Orthanc identifier</span></a>
+of the series of interest (that can be retrieved using <a class="reference internal" href="../users/cookbook.html#orthanc-explorer"><span class="std std-ref">Orthanc
+Explorer</span></a> or the <a class="reference internal" href="../users/rest.html#rest"><span class="std std-ref">REST API</span></a>), and the
+path to the target TIFF file.</p>
+<p>Similarly to the DICOM-izer, the command-line options <code class="docutils literal notranslate"><span class="pre">--orthanc</span></code>,
+<code class="docutils literal notranslate"><span class="pre">--username</span></code> and <code class="docutils literal notranslate"><span class="pre">--password</span></code> can be used to specify the
+parameters of your Orthanc server.</p>
+</div>
+</div>
+<div class="section" id="rest-api">
+<h2><a class="toc-backref" href="#id13">REST API</a><a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h2>
+<p>Besides providing an user interface, the plugin for whole-slide
+imaging also enrich the <a class="reference internal" href="../users/rest.html#rest"><span class="std std-ref">REST API</span></a> of Orthanc with some
+new URIs, that are described in this section.</p>
+<p>Note that the Web interface of the plugin exclusively relies upon this
+enriched REST API in order to display whole-slide images using the
+<a class="reference external" href="https://openlayers.org/">OpenLayers 3</a> JavaScript library.</p>
+<div class="section" id="information-about-a-whole-slide-image">
+<h3><a class="toc-backref" href="#id14">Information about a whole-slide image</a><a class="headerlink" href="#information-about-a-whole-slide-image" title="Permalink to this headline">¶</a></h3>
+<p>You can check whether a DICOM series associated with some known
+<a class="reference internal" href="../faq/orthanc-ids.html#orthanc-ids"><span class="std std-ref">Orthanc ID</span></a> <code class="docutils literal notranslate"><span class="pre">id</span></code> corresponds to a whole-slide
+image by calling the <code class="docutils literal notranslate"><span class="pre">/wsi/pyramids/{id}</span></code> URI. A HTTP status code
+404 is returned if the series is <em>not</em> a whole-slide image:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl -v http://localhost:8042/wsi/pyramids/ca2cc2ef-2dd8be12-0a4506ae-d565b7e1-a4ca9068
+[...]
+&lt; HTTP/1.1 404 Not Found
+</pre></div>
+</div>
+<p>However, if the identifier corresponds to a valid whole-slide image,
+you will get information about its multi-resolution pyramid, formatted
+using JSON:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/wsi/pyramids/f0ed5846-2ce36a70-d27bb5d3-6ed9dac2-ee638d85
+{
+  &quot;ID&quot; : &quot;f0ed5846-2ce36a70-d27bb5d3-6ed9dac2-ee638d85&quot;,
+  &quot;Resolutions&quot; : [ 1, 2, 4, 8, 16 ],
+  &quot;Sizes&quot; : [
+    [ 10800, 5400 ],
+    [ 5400, 2700 ],
+    [ 2700, 1350 ],
+    [ 1350, 675 ],
+    [ 675, 338 ]
+  ],
+  &quot;TileHeight&quot; : 512,
+  &quot;TileWidth&quot; : 512,
+  &quot;TilesCount&quot; : [
+    [ 22, 11 ],
+    [ 11, 6 ],
+    [ 6, 3 ],
+    [ 3, 2 ],
+    [ 2, 1 ]
+  ],
+  &quot;TotalHeight&quot; : 5400,
+  &quot;TotalWidth&quot; : 10800
+}
+</pre></div>
+</div>
+<p>The size of the finest level of the pyramid is verbatim available from
+this output (in the example above, <code class="docutils literal notranslate"><span class="pre">10,800</span> <span class="pre">x</span> <span class="pre">5,400</span></code> pixels), as well
+as the size of each individual tile (<code class="docutils literal notranslate"><span class="pre">512</span> <span class="pre">x</span> <span class="pre">512</span></code> pixels). The
+<code class="docutils literal notranslate"><span class="pre">TilesCount</span></code> gives, for each level of the pyramid (sorted in
+decreasing resolutions), the number of tiles along each dimension: In
+the example above, the coarsest level contains 2 tiles along the X
+axis, and 1 tile along the Y.</p>
+<p>Note that the interpretation of the whole-slide image is done
+transparently by the plugin, which frees the user from parsing each
+and every DICOM instance in the series.</p>
+<p>The medical information associated with the series or its instances
+can as usual be retrieved using the core <a class="reference internal" href="../users/rest.html#rest"><span class="std std-ref">REST API</span></a> of
+Orthanc.</p>
+</div>
+<div class="section" id="decoding-the-individual-tiles">
+<h3><a class="toc-backref" href="#id15">Decoding the individual tiles</a><a class="headerlink" href="#decoding-the-individual-tiles" title="Permalink to this headline">¶</a></h3>
+<p>As discussed above, the <code class="docutils literal notranslate"><span class="pre">/wsi/pyramids/{id}</span></code> gives information about
+the number of tiles in each level of the multi-resolution pyramid
+associated with series <code class="docutils literal notranslate"><span class="pre">id</span></code>.</p>
+<p>You can then retrieve the individual tiles of each level using the
+<code class="docutils literal notranslate"><span class="pre">/wsi/tiles/{id}/{z}/{x}/{y}</span></code> URI, where <code class="docutils literal notranslate"><span class="pre">z</span></code> corresponds to the
+level of interest, and (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>) the index of the tile of
+interest at this level. All of these indices start at zero, the level
+<code class="docutils literal notranslate"><span class="pre">z=0</span></code> corresponding to the finest level.</p>
+<p>For instance, here is how to retrieve the central tile of the finest
+level of the pyramid (that contains <code class="docutils literal notranslate"><span class="pre">22</span> <span class="pre">x</span> <span class="pre">11</span></code> tiles in our example):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/wsi/tiles/f0ed5846-2ce36a70-d27bb5d3-6ed9dac2-ee638d85/0/11/5 &gt; tile.jpg
+$ identify ./tile.jpg
+./tile.jpg JPEG 512x512 512x512+0+0 8-bit DirectClass 88.5KB 0.000u 0:00.000
+</pre></div>
+</div>
+<p>As can be seen, the plugin has returned a JPEG image of size <code class="docutils literal notranslate"><span class="pre">512</span> <span class="pre">x</span>
+<span class="pre">512</span></code>, which corresponds to the size of the tiles in this sample
+image. If trying to access a tile outside the image, the plugin will
+return with an HTTP status code that is not <code class="docutils literal notranslate"><span class="pre">200</span> <span class="pre">OK</span></code>. Similarly,
+here is how to retrieve a tile at the coarsest level (the pyramid has
+5 levels in our example):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/wsi/tiles/f0ed5846-2ce36a70-d27bb5d3-6ed9dac2-ee638d85/4/0/0 &gt; tile.jpg
+</pre></div>
+</div>
+<p>Depending upon the transfer syntax of the DICOM instances, the tile
+might not be encoded using JPEG. Indeed, if the transfer syntax is
+uncompressed (UID <code class="docutils literal notranslate"><span class="pre">1.2.840.10008.1.2</span></code> and friends) or JPEG2k
+lossless (UID <code class="docutils literal notranslate"><span class="pre">1.2.840.10008.1.2.4.90</span></code>), the plugin will
+transparently re-encode the tile to PNG in order to avoid any
+destructive compression.</p>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

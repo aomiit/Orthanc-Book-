@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>数据库版本 &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="实现的注意事项" href="implementation-notes.html" />
+    <link rel="prev" title="Stone of Orthanc" href="stone.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="db-versioning">
+<span id="id1"></span><h1>数据库版本<a class="headerlink" href="#db-versioning" title="Permalink to this headline">¶</a></h1>
+<p>Orthanc stores the index of the DICOM instances as an embedded <a class="reference external" href="http://www.sqlite.org/">SQLite
+database</a>. The schema of this database has
+evolved across the versions of Orthanc, making the database
+incompatible between versions. This page clarifies which versions of
+Orthanc are compatible with other versions.</p>
+<div class="section" id="recent-versions-post-0-3-1">
+<h2>Recent versions (post-0.3.1)<a class="headerlink" href="#recent-versions-post-0-3-1" title="Permalink to this headline">¶</a></h2>
+<p>Recent versions of Orthanc (starting 0.3.1, inclusive) include
+information about the version of the DB schema in the SQLite table
+<code class="docutils literal notranslate"><span class="pre">GlobalProperties</span></code> under the property with index 1. Versions with the
+same version of the DB schema are compatible with each other.</p>
+<p>When some version of Orthanc starts up, it checks whether it is
+compatible with the database version. Orthanc will <strong>fail to start if
+it is not compatible with the database version</strong>. Here is the
+compatibility matrix:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="55%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Version</th>
+<th class="head">DB v2</th>
+<th class="head">DB v3</th>
+<th class="head">DB v4</th>
+<th class="head">DB v5</th>
+<th class="head">DB v6</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Mainline</td>
+<td>&#160;</td>
+<td>u</td>
+<td>u</td>
+<td>u</td>
+<td>x</td>
+</tr>
+<tr class="row-odd"><td>Orthanc 0.9.5 - Orthanc 1.3.2</td>
+<td>&#160;</td>
+<td>u</td>
+<td>u</td>
+<td>u</td>
+<td>x</td>
+</tr>
+<tr class="row-even"><td>Orthanc 0.8.5 - Orthanc 0.9.4</td>
+<td>&#160;</td>
+<td>u</td>
+<td>u</td>
+<td>x</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>Orthanc 0.7.3 - Orthanc 0.8.4</td>
+<td>&#160;</td>
+<td>u</td>
+<td>x</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>Orthanc 0.4.0 - Orthanc 0.7.2</td>
+<td>&#160;</td>
+<td>x</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>Orthanc 0.3.1</td>
+<td>x</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+<p><em>Note 1:</em> “u” means that an automatic upgrade of the DB schema is
+available, without having to <a class="reference internal" href="../users/replication.html#replication"><span class="std std-ref">migrate the database</span></a>.</p>
+<p><em>Note 2:</em> Starting with Orthanc 0.9.5, the option <code class="docutils literal notranslate"><span class="pre">--upgrade</span></code> must be provided
+on the command-line to allow Orthanc to upgrade the database schema.</p>
+</div>
+<div class="section" id="early-versions-pre-0-3-0">
+<h2>Early versions (pre-0.3.0)<a class="headerlink" href="#early-versions-pre-0-3-0" title="Permalink to this headline">¶</a></h2>
+<p>Early versions of Orthanc (up to version 0.3.0, inclusive) <strong>do not
+check the version</strong> of the database schema. Because of this, these
+early versions are incompatible with all the other versions. Pay
+attention to the fact that no compatibility check is done in these
+versions, which may result in a corrupted database.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

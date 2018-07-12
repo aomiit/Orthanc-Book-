@@ -1,0 +1,777 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Orthanc的REST API &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="备份" href="backup.html" />
+    <link rel="prev" title="Orthanc的配置" href="configuration.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="orthancrest-api">
+<span id="rest"></span><h1><a class="toc-backref" href="#id17">Orthanc的REST API</a><a class="headerlink" href="#orthancrest-api" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#orthancrest-api" id="id17">Orthanc的REST API</a><ul>
+<li><a class="reference internal" href="#dicom" id="id18">发送DICOM影像</a></li>
+<li><a class="reference internal" href="#orthanc" id="id19">访问Orthanc的内容</a><ul>
+<li><a class="reference internal" href="#id1" id="id20">列出所有DICOM资源</a></li>
+<li><a class="reference internal" href="#patient" id="id21">访问一个patient</a></li>
+<li><a class="reference internal" href="#id2" id="id22">从病人到实例的浏览</a></li>
+<li><a class="reference internal" href="#jsondicom" id="id23">以JSON文件的形式访问实例的DICOM字段</a></li>
+<li><a class="reference internal" href="#id3" id="id24">访问实例的原始DICOM字段</a></li>
+<li><a class="reference internal" href="#id4" id="id25">下载影像</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changes" id="id26">发送资源到远程模态</a><ul>
+<li><a class="reference internal" href="#id6" id="id27">配置</a></li>
+<li><a class="reference internal" href="#id7" id="id28">发送一个资源</a></li>
+<li><a class="reference internal" href="#bulk-store-scu" id="id29">Bulk Store SCU</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#restquery-retrieve-find" id="id30">使用REST执行查Query/Retrieve 和 Find</a><ul>
+<li><a class="reference internal" href="#id8" id="id31">执行查询</a></li>
+<li><a class="reference internal" href="#id9" id="id32">附加选项</a></li>
+<li><a class="reference internal" href="#level" id="id33">检验Level</a></li>
+<li><a class="reference internal" href="#modality" id="id34">检验Modality</a></li>
+<li><a class="reference internal" href="#query" id="id35">检验Query</a></li>
+<li><a class="reference internal" href="#id10" id="id36">检验Query应答</a></li>
+<li><a class="reference internal" href="#retrieve-c-move" id="id37">执行Retrieve (C-Move)</a></li>
+<li><a class="reference internal" href="#orthancfinds" id="id38">在Orthanc上执行Finds</a></li>
+<li><a class="reference internal" href="#id11" id="id39">附加选项</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id12" id="id40">跟踪变化</a></li>
+<li><a class="reference internal" href="#id13" id="id41">从Orthanc上删除资源</a><ul>
+<li><a class="reference internal" href="#patients-studies-series-instances" id="id42">删除 patients, studies, series 或 instances</a></li>
+<li><a class="reference internal" href="#log" id="id43">清除变化的log日志</a></li>
+<li><a class="reference internal" href="#id14" id="id44">清除导出资源的log日志</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id15" id="id45">匿名化和修改</a></li>
+<li><a class="reference internal" href="#id16" id="id46">延伸阅读</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Orthanc的一个主要优势在于它内置 <a class="reference external" href="https://en.wikipedia.org/wiki/Representational_state_transfer">RESTful API</a>,
+可以用来从外部应用中驱动Orthanc，自主选择开发的编程语言开发这些应用程序。
+Orthanc的REST API对Orthanc的所有核心特性进行了全面的编程访问。</p>
+<p>重要的是, Orthanc Explorer (Orthanc的嵌入式管理界面)完全依赖于这个REST API的所有特性。
+这意味着任何可以通过Orthanc Explorer完成的事情，也可以通过REST查询完成。</p>
+<p><em>注意:</em> 所有的例子都用 <a class="reference external" href="https://curl.haxx.se/">cURL command-line tool</a>,
+但同样的也很容易转换到任何同时支持HTTP和JSON的编程语言。</p>
+<div class="section" id="dicom">
+<span id="sending-dicom-images"></span><h2><a class="toc-backref" href="#id18">发送DICOM影像</a><a class="headerlink" href="#dicom" title="Permalink to this headline">¶</a></h2>
+<p>通过查询REST API，可以上传DICOM文件，语法如下:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl -X POST http://localhost:8042/instances --data-binary @CT.X.1.2.276.0.7230010.dcm
+</pre></div>
+</div>
+<p>Orthanc将使用一个JSON文件进行响应，该文件包含有关存储实例位置的信息,例如:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;e87da270-c52b-4f2a-b8c6-bae25928d0b0&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Path&quot;</span> <span class="p">:</span> <span class="s2">&quot;/instances/e87da270-c52b-4f2a-b8c6-bae25928d0b0&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Status&quot;</span> <span class="p">:</span> <span class="s2">&quot;Success&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>注意，对于curl，设置“Expect”HTTP报头就可以了显著 <a class="reference external" href="http://stackoverflow.com/questions/463144/php-http-post-fails-when-curl-data-1024/463277#463277">减少POST请求的执行时间</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl -X POST -H <span class="s2">&quot;Expect:&quot;</span> http://localhost:8042/instances --data-binary @CT.X.1.2.276.0.7230010.dcm
+</pre></div>
+</div>
+<p>Orthanc的代码分发版包含一个 <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/Resources/Samples/ImportDicomFiles/ImportDicomFiles.py">Python脚本示例</a>
+，它展示了递归地将某些文件夹的内容通过REST API上载到Orthanc:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python ImportDicomFiles.py localhost <span class="m">8042</span> ~/DICOM/
+</pre></div>
+</div>
+</div>
+<div class="section" id="orthanc">
+<span id="rest-access"></span><h2><a class="toc-backref" href="#id19">访问Orthanc的内容</a><a class="headerlink" href="#orthanc" title="Permalink to this headline">¶</a></h2>
+<p>Orthanc使用”Patient,Study, Series, Instance”DICOM标准模型存储DICOM资源。每个DICOM
+资源与一个 <a class="reference internal" href="../faq/orthanc-ids.html#orthanc-ids"><span class="std std-ref">unique identifier</span></a> 相关联。</p>
+<div class="section" id="id1">
+<h3><a class="toc-backref" href="#id20">列出所有DICOM资源</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>下面是如何列出存储在你的本地Orthanc实例里的所有DICOM资源的方法:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/patients
+$ curl http://localhost:8042/studies
+$ curl http://localhost:8042/series
+$ curl http://localhost:8042/instances
+</pre></div>
+</div>
+<p>注意，这个命令的结果是一个包含一个资源标识符数组的`JSON 文件
+&lt;<a class="reference external" href="https://en.wikipedia.org/wiki/Json">https://en.wikipedia.org/wiki/Json</a>&gt;`__ JSON文件格式是轻量级的，可以是
+几乎由任何计算机语言解析。</p>
+</div>
+<div class="section" id="patient">
+<h3><a class="toc-backref" href="#id21">访问一个patient</a><a class="headerlink" href="#patient" title="Permalink to this headline">¶</a></h3>
+<p>To access a single resource, add its identifier to the <a class="reference external" href="https://en.wikipedia.org/wiki/Uniform_resource_identifier">URI</a>. You
+would for instance retrieve the main information about one patient as
+follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/patients/dc65762c-f476e8b9-898834f4-2f8a5014-2599bc94
+</pre></div>
+</div>
+<p>Here is a possible answer from Orthanc:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;07a6ec1c-1be5920b-18ef5358-d24441f3-10e926ea&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;MainDicomTags&quot;</span> <span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;OtherPatientIDs&quot;</span> <span class="p">:</span> <span class="s2">&quot;(null)&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;PatientBirthDate&quot;</span> <span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;PatientID&quot;</span> <span class="p">:</span> <span class="s2">&quot;000000185&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;PatientName&quot;</span> <span class="p">:</span> <span class="s2">&quot;Anonymous^Unknown&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;PatientSex&quot;</span> <span class="p">:</span> <span class="s2">&quot;O&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;Studies&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;9ad2b0da-a406c43c-6e0df76d-1204b86f-78d12c15&quot;</span> <span class="p">],</span>
+  <span class="nt">&quot;Type&quot;</span> <span class="p">:</span> <span class="s2">&quot;Patient&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is once again a JSON file. Note how Orthanc gives you a summary
+of the main DICOM tags that correspond to the patient level.</p>
+</div>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id22">从病人到实例的浏览</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The field <code class="docutils literal notranslate"><span class="pre">Studies</span></code> list all the DICOM studies that are associated
+with the patient. So, considering the patient above, we would go down
+in her DICOM hierarchy as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/studies/9ad2b0da-a406c43c-6e0df76d-1204b86f-78d12c15
+</pre></div>
+</div>
+<p>And Orthanc could answer:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;9ad2b0da-a406c43c-6e0df76d-1204b86f-78d12c15&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;MainDicomTags&quot;</span> <span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;AccessionNumber&quot;</span> <span class="p">:</span> <span class="s2">&quot;(null)&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;StudyDate&quot;</span> <span class="p">:</span> <span class="s2">&quot;20120716&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;StudyDescription&quot;</span> <span class="p">:</span> <span class="s2">&quot;TestSUVce-TF&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;StudyID&quot;</span> <span class="p">:</span> <span class="s2">&quot;23848&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;StudyInstanceUID&quot;</span> <span class="p">:</span> <span class="s2">&quot;1.2.840.113704.1.111.7016.1342451220.40&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;StudyTime&quot;</span> <span class="p">:</span> <span class="s2">&quot;170728&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;ParentPatient&quot;</span> <span class="p">:</span> <span class="s2">&quot;07a6ec1c-1be5920b-18ef5358-d24441f3-10e926ea&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Series&quot;</span> <span class="p">:</span> <span class="p">[</span>
+     <span class="s2">&quot;6821d761-31fb55a9-031ebecb-ba7f9aae-ffe4ddc0&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;2cc6336f-2d4ae733-537b3ca3-e98184b1-ba494b35&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;7384c47e-6398f2a8-901846ef-da1e2e0b-6c50d598&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;Type&quot;</span> <span class="p">:</span> <span class="s2">&quot;Study&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The main DICOM tags are now those that are related to the study
+level. It is possible to retrieve the identifier of the patient in the
+<code class="docutils literal notranslate"><span class="pre">ParentPatient</span></code> field, which can be used to go upward the DICOM
+hierarchy. But let us rather go down to the series level by using the
+<code class="docutils literal notranslate"><span class="pre">Series</span></code> array. The next command would return information about one
+of the three series that have just been reported:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/series/2cc6336f-2d4ae733-537b3ca3-e98184b1-ba494b35
+</pre></div>
+</div>
+<p>Here is a possible answer:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+  &quot;ExpectedNumberOfInstances&quot; : 45,
+  &quot;ID&quot; : &quot;2cc6336f-2d4ae733-537b3ca3-e98184b1-ba494b35&quot;,
+  &quot;Instances&quot; : [
+     &quot;41bc3f74-360f9d10-6ae9ffa4-01ea2045-cbd457dd&quot;,
+     &quot;1d3de868-6c4f0494-709fd140-7ccc4c94-a6daa3a8&quot;,
+     &lt;...&gt;
+     &quot;1010f80b-161b71c0-897ec01b-c85cd206-e669a3ea&quot;,
+     &quot;e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4&quot;
+  ],
+  &quot;MainDicomTags&quot; : {
+     &quot;Manufacturer&quot; : &quot;Philips Medical Systems&quot;,
+     &quot;Modality&quot; : &quot;PT&quot;,
+     &quot;NumberOfSlices&quot; : &quot;45&quot;,
+     &quot;ProtocolName&quot; : &quot;CHU/Body_PET/CT___50&quot;,
+     &quot;SeriesDate&quot; : &quot;20120716&quot;,
+     &quot;SeriesDescription&quot; : &quot;[WB_CTAC] Body&quot;,
+     &quot;SeriesInstanceUID&quot; : &quot;1.3.46.670589.28.2.12.30.26407.37145.2.2516.0.1342458737&quot;,
+     &quot;SeriesNumber&quot; : &quot;587370&quot;,
+     &quot;SeriesTime&quot; : &quot;171121&quot;,
+     &quot;StationName&quot; : &quot;r054-svr&quot;
+  },
+  &quot;ParentStudy&quot; : &quot;9ad2b0da-a406c43c-6e0df76d-1204b86f-78d12c15&quot;,
+  &quot;Status&quot; : &quot;Complete&quot;,
+  &quot;Type&quot; : &quot;Series&quot;
+}
+</pre></div>
+</div>
+<p>It can be seen that this series comes from a PET modality. Orthanc has
+computed that this series should contain 45 instances.</p>
+<p>So far, we have navigated from the patient level, to the study level,
+and finally to the series level. There only remains the instance
+level. Let us dump the content of one of the instances:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4
+</pre></div>
+</div>
+<p>The instance contains the following information:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;FileSize&quot;</span> <span class="p">:</span> <span class="mi">70356</span><span class="p">,</span>
+  <span class="nt">&quot;FileUuid&quot;</span> <span class="p">:</span> <span class="s2">&quot;3fd265f0-c2b6-41a2-ace8-ae332db63e06&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;IndexInSeries&quot;</span> <span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+  <span class="nt">&quot;MainDicomTags&quot;</span> <span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;ImageIndex&quot;</span> <span class="p">:</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;InstanceCreationDate&quot;</span> <span class="p">:</span> <span class="s2">&quot;20120716&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;InstanceCreationTime&quot;</span> <span class="p">:</span> <span class="s2">&quot;171344&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;InstanceNumber&quot;</span> <span class="p">:</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;SOPInstanceUID&quot;</span> <span class="p">:</span> <span class="s2">&quot;1.3.46.670589.28.2.15.30.26407.37145.3.2116.39.1342458737&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;ParentSeries&quot;</span> <span class="p">:</span> <span class="s2">&quot;2cc6336f-2d4ae733-537b3ca3-e98184b1-ba494b35&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Type&quot;</span> <span class="p">:</span> <span class="s2">&quot;Instance&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The instance has the index 6 in the parent series. The instance is
+stored as a raw DICOM file of 70356 bytes. You would download this
+DICOM file using the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4/file &gt; Instance.dcm
+</pre></div>
+</div>
+</div>
+<div class="section" id="jsondicom">
+<h3><a class="toc-backref" href="#id23">以JSON文件的形式访问实例的DICOM字段</a><a class="headerlink" href="#jsondicom" title="Permalink to this headline">¶</a></h3>
+<p>When one gets to the instance level, you can retrieve the hierarchy of
+all the DICOM tags of this instance as a JSON file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4/simplified-tags
+</pre></div>
+</div>
+<p>Here is a excerpt of the Orthanc answer:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+  &quot;ACR_NEMA_2C_VariablePixelDataGroupLength&quot; : &quot;57130&quot;,
+  &quot;AccessionNumber&quot; : null,
+  &quot;AcquisitionDate&quot; : &quot;20120716&quot;,
+  &quot;AcquisitionDateTime&quot; : &quot;20120716171219&quot;,
+  &quot;AcquisitionTime&quot; : &quot;171219&quot;,
+  &quot;ActualFrameDuration&quot; : &quot;3597793&quot;,
+  &quot;AttenuationCorrectionMethod&quot; : &quot;CTAC-SG&quot;,
+  &lt;...&gt;
+  &quot;PatientID&quot; : &quot;000000185&quot;,
+  &quot;PatientName&quot; : &quot;Anonymous^Unknown&quot;,
+  &quot;PatientOrientationCodeSequence&quot; : [
+     {
+        &quot;CodeMeaning&quot; : &quot;recumbent&quot;,
+        &quot;CodeValue&quot; : &quot;F-10450&quot;,
+        &quot;CodingSchemeDesignator&quot; : &quot;99SDM&quot;,
+        &quot;PatientOrientationModifierCodeSequence&quot; : [
+           {
+              &quot;CodeMeaning&quot; : &quot;supine&quot;,
+              &quot;CodeValue&quot; : &quot;F-10340&quot;,
+              &quot;CodingSchemeDesignator&quot; : &quot;99SDM&quot;
+           }
+        ]
+     }
+  ],
+  &lt;...&gt;
+  &quot;StudyDescription&quot; : &quot;TestSUVce-TF&quot;,
+  &quot;StudyID&quot; : &quot;23848&quot;,
+  &quot;StudyInstanceUID&quot; : &quot;1.2.840.113704.1.111.7016.1342451220.40&quot;,
+  &quot;StudyTime&quot; : &quot;171117&quot;,
+  &quot;TypeOfDetectorMotion&quot; : &quot;NONE&quot;,
+  &quot;Units&quot; : &quot;BQML&quot;,
+  &quot;Unknown&quot; : null,
+  &quot;WindowCenter&quot; : &quot;1.496995e+04&quot;,
+  &quot;WindowWidth&quot; : &quot;2.993990e+04&quot;
+}
+</pre></div>
+</div>
+<p>If you need more detailed information about the type of the variables
+or if you wish to use the hexadecimal indexes of DICOM tags, you are
+free to use the following URL:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4/tags
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id24">访问实例的原始DICOM字段</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>You also have the opportunity to access the raw value of the DICOM
+tags of an instance, without going through a JSON file. Here is how
+you would find the Patient Name of the instance:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4/content/0010-0010
+Anonymous^Unknown
+</pre></div>
+</div>
+<p>The list of all the available tags for this instance can also be retrieved
+easily:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4/content
+</pre></div>
+</div>
+<p>It is also possible to recursively explore the sequences of tags:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4/content/0008-1250/0/0040-a170/0/0008-0104
+For Attenuation Correction
+</pre></div>
+</div>
+<p>The command above has opened the “0008-1250” tag that is a DICOM
+sequence, taken its first child, opened its “0040-a170” tag that is
+also a sequence, taken the first child of this child, and returned the
+“0008-0104” DICOM tag.</p>
+</div>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id25">下载影像</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>It is also possible to download a preview PNG image that corresponds to some DICOM instance:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/e668dcbf-8829a100-c0bd203b-41e404d9-c533f3d4/preview &gt; Preview.png
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>The resulting image will be a standard graylevel PNG image that can be opened by any</dt>
+<dd>painting software.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="changes">
+<span id="id5"></span><h2><a class="toc-backref" href="#id26">发送资源到远程模态</a><a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Orthanc can send its DICOM instances to remote DICOM modalities (C-Store SCU).</dt>
+<dd>This process can be triggered by the REST API.</dd>
+</dl>
+<div class="section" id="id6">
+<h3><a class="toc-backref" href="#id27">配置</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>You first have to declare the AET, the IP address and the port number
+of the remote modality inside the <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration file</span></a>. For instance, here is how to declare a remote
+modality:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>...
+&quot;DicomModalities&quot; : {
+  &quot;sample&quot; : [ &quot;STORESCP&quot;, &quot;127.0.0.1&quot;, 2000 ]
+},
+...
+</pre></div>
+</div>
+<p>Such a configuration would enable Orthanc to connect to another DICOM
+store (for instance, another Orthanc instance) that listens on the
+localhost on the port 2000. The modalities that are known to Orthanc
+can be queried:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/modalities
+</pre></div>
+</div>
+</div>
+<div class="section" id="id7">
+<h3><a class="toc-backref" href="#id28">发送一个资源</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>Once you have identified the Orthanc identifier of the DICOM resource
+that would like to send <a class="reference internal" href="#rest-access"><span class="std std-ref">as explained above</span></a>, you
+would use the following command to send it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl -X POST http://localhost:8042/modalities/sample/store -d c4ec7f68-9b162055-2c8c5888-5bf5752f-155ab19f
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">/sample/</span></code> component of the URI corresponds to the identifier of
+the remote modality, as specified above in the configuration file.</p>
+<dl class="docutils">
+<dt>Note that you can send isolated DICOM instances with this command,</dt>
+<dd>but also entire patients, studies or series.</dd>
+</dl>
+</div>
+<div class="section" id="bulk-store-scu">
+<h3><a class="toc-backref" href="#id29">Bulk Store SCU</a><a class="headerlink" href="#bulk-store-scu" title="Permalink to this headline">¶</a></h3>
+<p>Each time a POST request is made to <code class="docutils literal notranslate"><span class="pre">/modalities/.../store</span></code>, a new
+DICOM connection is possibly established. This may lead to a large
+communication overhead if sending multiple isolated instances.</p>
+<p>To circumvent this problem, you have 2 possibilities:</p>
+<ol class="arabic">
+<li><p class="first">Set the <code class="docutils literal notranslate"><span class="pre">DicomAssociationCloseDelay</span></code> option in the
+<a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration file</span></a> to a non-zero value. This
+will keep the DICOM connection open for a certain amount of time,
+waiting for new instances to be routed.</p>
+</li>
+<li><p class="first">If you do not want to keep the connection open but inactive, it is
+possible to send multiple instances with a single POST request
+(so-called “Bulk Store SCU”, available from Orthanc 0.5.2):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl -X POST http://localhost:8042/modalities/sample/store -d <span class="s1">&#39;[&quot;d4b46c8e-74b16992-b0f5ca11-f04a60fa-8eb13a88&quot;,&quot;d5604121-7d613ce6-c315a5-a77b3cf3-9c253b23&quot;,&quot;cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e&quot;]&#39;</span>
+</pre></div>
+</div>
+<p>The list of the resources to be sent are given as a JSON array. In
+this case, a single DICOM connection is used. <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/Resources/Samples/Python/HighPerformanceAutoRouting.py">Sample code is
+available</a>.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="restquery-retrieve-find">
+<h2><a class="toc-backref" href="#id30">使用REST执行查Query/Retrieve 和 Find</a><a class="headerlink" href="#restquery-retrieve-find" title="Permalink to this headline">¶</a></h2>
+<p><em>Section contributed by Bryan Dearlove</em></p>
+<p>Orthanc can be used to perform queries on the local Orthanc instance,
+or on remote modalities through the REST API.</p>
+<p>To perform a query of a remote modality you must define the modality
+within the <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration file</span></a> (See
+Configuration section under Sending resources to remote modalities).</p>
+<div class="section" id="id8">
+<h3><a class="toc-backref" href="#id31">执行查询</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>To initiate a query you perform a POST command against the Modality
+with the identifiers you are looking for. The the example below we are
+performing a study level query against the modality sample for any
+study descriptions with the word chest within it. This search is case
+insensitive unless configured otherwise within the Orthanc
+configuration file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl --request POST <span class="se">\</span>
+  --url http://localhost:8042/modalities/sample/query <span class="se">\</span>
+  --data <span class="s1">&#39;{&quot;Level&quot;:&quot;Study&quot;,&quot;Query&quot;: {&quot;PatientID&quot;:&quot;&quot;,&quot;StudyDescription&quot;:&quot;*Chest*&quot;,&quot;PatientName&quot;:&quot;&quot;}}&#39;</span>
+</pre></div>
+</div>
+<p>You will receive back an ID which can be used to retrieve more
+information with GET commands or C-Move requests with a POST Command:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;ID&quot;</span><span class="p">:</span> <span class="s2">&quot;5af318ac-78fb-47ff-b0b0-0df18b0588e0&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;Path&quot;</span><span class="p">:</span> <span class="s2">&quot;/queries/5af318ac-78fb-47ff-b0b0-0df18b0588e0&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id9">
+<h3><a class="toc-backref" href="#id32">附加选项</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>You can use patient identifiers by including the <cite>*</cite> within your
+search. For example if you were searching for a name beginning with
+<cite>Jones</cite> you can do:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;PatientName&quot;:&quot;Jones*&quot;
+</pre></div>
+</div>
+<p>If you wanted to search for a name with the words <cite>Jo</cite> anywhere within
+it you can do:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;PatientName&quot;:&quot;*Jo*&quot;
+</pre></div>
+</div>
+<p>To perform date searches you can specify within StudyDate a starting
+date and/or a before date. For example <code class="docutils literal notranslate"><span class="pre">&quot;StudyDate&quot;:&quot;20180323-&quot;</span></code>
+would search for all study dates after the specified date to
+now. Doing <code class="docutils literal notranslate"><span class="pre">&quot;StudyDate&quot;:&quot;20180323-20180325&quot;</span></code> would search for all
+study dates between the specified date.</p>
+</div>
+<div class="section" id="level">
+<h3><a class="toc-backref" href="#id33">检验Level</a><a class="headerlink" href="#level" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl --request GET --url http://localhost:8042/queries/5af318ac-78fb-47ff-b0b0-0df18b0588e0/level
+</pre></div>
+</div>
+<p>Will retrieve the level with which the query was performed, Study,
+Series or Instance.</p>
+</div>
+<div class="section" id="modality">
+<h3><a class="toc-backref" href="#id34">检验Modality</a><a class="headerlink" href="#modality" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl --request GET --url http://localhost:8042/queries/5af318ac-78fb-47ff-b0b0-0df18b0588e0/modality
+</pre></div>
+</div>
+<p>Will provide the modality name which the original query was performed against.</p>
+</div>
+<div class="section" id="query">
+<h3><a class="toc-backref" href="#id35">检验Query</a><a class="headerlink" href="#query" title="Permalink to this headline">¶</a></h3>
+<p>To retrieve information on what identifiers the query was originally
+performed using you can use the query filter:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl --request GET --url http://localhost:8042/queries/5af318ac-78fb-47ff-b0b0-0df18b0588e0/query
+</pre></div>
+</div>
+</div>
+<div class="section" id="id10">
+<h3><a class="toc-backref" href="#id36">检验Query应答</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>You are able to individually review each answer returned by performing
+a GET with the answers parameter:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl --request GET --url http://localhost:8042/queries/5af318ac-78fb-47ff-b0b0-0df18b0588e0/answers
+</pre></div>
+</div>
+<p>You will get a JSON back with numbered identifiers for each answer you
+received back. For example because we performed a Study level query we
+received back 5 studies answers back. We are able to query each answer
+for content details:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl --request GET --url http://localhost:8042/queries/5af318ac-78fb-47ff-b0b0-0df18b0588e0/answers/0/content
+</pre></div>
+</div>
+<p>If there are content items missing, you may add them by adding that
+identifier to the original query. For example if we wanted Modalities
+listed in this JSON answer in the initial query we would add to the
+POST body: <cite>“ModalitiesInStudy”:”“</cite></p>
+</div>
+<div class="section" id="retrieve-c-move">
+<h3><a class="toc-backref" href="#id37">执行Retrieve (C-Move)</a><a class="headerlink" href="#retrieve-c-move" title="Permalink to this headline">¶</a></h3>
+<p>You can perform a C-Move to retrieve all studies within the original
+query using a post command and identifying the Modality to be one to
+in the POST contents:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl --request POST --url http://localhost:8042/queries/5af318ac-78fb-47ff-b0b0-0df18b0588e0/retrieve --data Orthanc
+</pre></div>
+</div>
+<p>You are also able to perform individual C-Moves for a content item by
+specifying that individual content item:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl --request POST --url http://localhost:8042/queries/5af318ac-78fb-47ff-b0b0-0df18b0588e0/answers/0/retrieve --data Orthanc
+</pre></div>
+</div>
+</div>
+<div class="section" id="orthancfinds">
+<h3><a class="toc-backref" href="#id38">在Orthanc上执行Finds</a><a class="headerlink" href="#orthancfinds" title="Permalink to this headline">¶</a></h3>
+<p>Performing a find within Orthanc is very similar to using Queries
+against DICOM modalities and the additional options listed above work
+with find also.  When performing a find, you will receive the Orthanc
+ID’s of all the matched items within your find. For example if you
+perform a study level find and 5 Studies match you will receive 5
+study level Orthanc ID’s in JSON format as a response:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl --request POST --url http://localhost:8042/tools/find --data <span class="s1">&#39;{&quot;Level&quot;:&quot;Instance&quot;,&quot;Query&quot;:{&quot;Modality&quot;:&quot;CR&quot;,&quot;StudyDate&quot;:&quot;20180323-&quot;,&quot;PatientID&quot;:&quot;*&quot;}}&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h3><a class="toc-backref" href="#id39">附加选项</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>You also have the ability to limit the responses by specifying a limit within the body of</dt>
+<dd><p class="first">the POST message. For example:</p>
+<div class="last highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;Limit&quot;:4
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="id12">
+<h2><a class="toc-backref" href="#id40">跟踪变化</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>Whenever Orthanc receives a new DICOM instance, this event is recorded
+in the so-called “Changes Log”. This enables remote scripts to react
+to the arrival of new DICOM resources. A typical application is
+<strong>auto-routing</strong>, where an external script waits for a new DICOM
+instance to arrive into Orthanc, then forward this instance to another
+modality.</p>
+<p>The Changes Log can be accessed by the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/changes
+</pre></div>
+</div>
+<p>Here is a typical output:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;Changes&quot;</span> <span class="p">:</span> <span class="p">[</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;ChangeType&quot;</span> <span class="p">:</span> <span class="s2">&quot;NewInstance&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Date&quot;</span> <span class="p">:</span> <span class="s2">&quot;20130507T143902&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;8e289db9-0e1437e1-3ecf395f-d8aae463-f4bb49fe&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Path&quot;</span> <span class="p">:</span> <span class="s2">&quot;/instances/8e289db9-0e1437e1-3ecf395f-d8aae463-f4bb49fe&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ResourceType&quot;</span> <span class="p">:</span> <span class="s2">&quot;Instance&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Seq&quot;</span> <span class="p">:</span> <span class="mi">921</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;ChangeType&quot;</span> <span class="p">:</span> <span class="s2">&quot;NewSeries&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Date&quot;</span> <span class="p">:</span> <span class="s2">&quot;20130507T143902&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;cceb768f-e0f8df71-511b0277-07e55743-9ef8890d&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Path&quot;</span> <span class="p">:</span> <span class="s2">&quot;/series/cceb768f-e0f8df71-511b0277-07e55743-9ef8890d&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ResourceType&quot;</span> <span class="p">:</span> <span class="s2">&quot;Series&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Seq&quot;</span> <span class="p">:</span> <span class="mi">922</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;ChangeType&quot;</span> <span class="p">:</span> <span class="s2">&quot;NewStudy&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Date&quot;</span> <span class="p">:</span> <span class="s2">&quot;20130507T143902&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;c4ec7f68-9b162055-2c8c5888-5bf5752f-155ab19f&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Path&quot;</span> <span class="p">:</span> <span class="s2">&quot;/studies/c4ec7f68-9b162055-2c8c5888-5bf5752f-155ab19f&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ResourceType&quot;</span> <span class="p">:</span> <span class="s2">&quot;Study&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Seq&quot;</span> <span class="p">:</span> <span class="mi">923</span>
+     <span class="p">},</span>
+     <span class="p">{</span>
+        <span class="nt">&quot;ChangeType&quot;</span> <span class="p">:</span> <span class="s2">&quot;NewPatient&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Date&quot;</span> <span class="p">:</span> <span class="s2">&quot;20130507T143902&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;dc65762c-f476e8b9-898834f4-2f8a5014-2599bc94&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Path&quot;</span> <span class="p">:</span> <span class="s2">&quot;/patients/dc65762c-f476e8b9-898834f4-2f8a5014-2599bc94&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;ResourceType&quot;</span> <span class="p">:</span> <span class="s2">&quot;Patient&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Seq&quot;</span> <span class="p">:</span> <span class="mi">924</span>
+     <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;Done&quot;</span> <span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="nt">&quot;Last&quot;</span> <span class="p">:</span> <span class="mi">924</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This output corresponds to the receiving of one single DICOM instance
+by Orthanc. It records that a new instance, a new series, a new study
+and a new patient has been created inside Orthanc. Note that each
+changes is labeled by a <code class="docutils literal notranslate"><span class="pre">ChangeType</span></code>, a <code class="docutils literal notranslate"><span class="pre">Date</span></code> (in the <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_8601">ISO format</a>), the location of the
+resource inside Orthanc, and a sequence number (<code class="docutils literal notranslate"><span class="pre">Seq</span></code>).</p>
+<p>Note that this call is non-blocking. It is up to the calling program
+to wait for the occurrence of a new event (by implementing a polling
+loop).</p>
+<p>This call only returns a fixed number of events, that can be changed
+by using the <code class="docutils literal notranslate"><span class="pre">limit</span></code> option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/changes?limit<span class="o">=</span><span class="m">100</span>
+</pre></div>
+</div>
+<p>The flag <code class="docutils literal notranslate"><span class="pre">Last</span></code> records the sequence number of the lastly returned
+event. The flag <code class="docutils literal notranslate"><span class="pre">Done</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code> if no further event has
+occurred after this lastly returned event. If <code class="docutils literal notranslate"><span class="pre">Done</span></code> is set to
+<code class="docutils literal notranslate"><span class="pre">false</span></code>, further events are available and can be retrieved. This is
+done by setting the <code class="docutils literal notranslate"><span class="pre">since</span></code> option that specifies from which
+sequence number the changes must be returned:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl <span class="s1">&#39;http://localhost:8042/changes?limit=100&amp;since=922&#39;</span>
+</pre></div>
+</div>
+<p>A <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/Resources/Samples/Python/ChangesLoop.py">sample code in the source distribution</a>
+shows how to use this Changes API to implement a polling loop.</p>
+</div>
+<div class="section" id="id13">
+<h2><a class="toc-backref" href="#id41">从Orthanc上删除资源</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="patients-studies-series-instances">
+<h3><a class="toc-backref" href="#id42">删除 patients, studies, series 或 instances</a><a class="headerlink" href="#patients-studies-series-instances" title="Permalink to this headline">¶</a></h3>
+<p>Deleting DICOM resources (i.e. patients, studies, series or instances)
+from Orthanc is as simple as using a HTTP DELETE on the URI of this
+resource.</p>
+<p>Concretely, you would first explore the resources that are stored in
+Orthanc <a class="reference internal" href="#rest-access"><span class="std std-ref">as explained above</span></a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/patients
+$ curl http://localhost:8042/studies
+$ curl http://localhost:8042/series
+$ curl http://localhost:8042/instances
+</pre></div>
+</div>
+<p>Secondly, once you have spotted the resources to be removed, you would
+use the following command-line syntax to delete them:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl -X DELETE http://localhost:8042/patients/dc65762c-f476e8b9-898834f4-2f8a5014-2599bc94
+$ curl -X DELETE http://localhost:8042/studies/c4ec7f68-9b162055-2c8c5888-5bf5752f-155ab19f
+$ curl -X DELETE http://localhost:8042/series/cceb768f-e0f8df71-511b0277-07e55743-9ef8890d
+$ curl -X DELETE http://localhost:8042/instances/8e289db9-0e1437e1-3ecf395f-d8aae463-f4bb49fe
+</pre></div>
+</div>
+</div>
+<div class="section" id="log">
+<h3><a class="toc-backref" href="#id43">清除变化的log日志</a><a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="#changes"><span class="std std-ref">As described above</span></a>, Orthanc keeps track of all the
+changes that occur in the DICOM store. This so-called “Changes Log”
+is accessible at the following URI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/changes
+</pre></div>
+</div>
+<p>To clear the content of the Changes Log, simply DELETE this URI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl -X DELETE http://localhost:8042/changes
+</pre></div>
+</div>
+</div>
+<div class="section" id="id14">
+<h3><a class="toc-backref" href="#id44">清除导出资源的log日志</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>For medical traceability, Orthanc stores a log of all the resources
+that have been exported to remote modalities:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/exports
+</pre></div>
+</div>
+<p>In auto-routing scenarios, it is important to prevent this log to grow
+indefinitely as incoming instances are routed. You can either disable
+this logging by setting the option <code class="docutils literal notranslate"><span class="pre">LogExportedResources</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code>
+in the <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration file</span></a>, or periodically
+clear this log by DELETE-ing this URI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl -X DELETE http://localhost:8042/exports
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id15">
+<h2><a class="toc-backref" href="#id45">匿名化和修改</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h2>
+<p>对DICOM资源进行匿名化和修改的过程是在 <a class="reference internal" href="anonymization.html#anonymization"><span class="std std-ref">单独的文档</span></a>.</p>
+</div>
+<div class="section" id="id16">
+<h2><a class="toc-backref" href="#id46">延伸阅读</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h2>
+<p>The examples above have shown you the basic principles for driving an
+instance of Orthanc through its REST API. All the possibilities of the
+API have not been described:</p>
+<ul class="simple">
+<li>A <a class="reference internal" href="../faq/rest-samples.html#rest-samples"><span class="std std-ref">FAQ entry</span></a> lists where you can find more
+advanced samples of the REST API of Orthanc.</li>
+<li>The full documentation of the REST API is maintained as an online
+spreadsheet accessible from the <a class="reference external" href="http://www.orthanc-server.com/static.php?page=documentation">documentation part of the official
+Web site</a>
+(click on the <em>Reference of the REST API</em> button).</li>
+</ul>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

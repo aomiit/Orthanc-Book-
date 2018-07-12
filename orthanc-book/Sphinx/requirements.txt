@@ -1,0 +1,13 @@
+alabaster
+Babel
+colorama
+docutils
+imagesize
+Jinja2
+MarkupSafe
+Pygments
+pytz
+six
+snowballstemmer
+Sphinx
+sphinx-bootstrap-theme

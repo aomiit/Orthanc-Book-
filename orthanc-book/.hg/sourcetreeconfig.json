@@ -1,0 +1,30 @@
+{
+  "$id": "7",
+  "AutoRefresh": true,
+  "AutoRefreshRemotes": true,
+  "CommitTextLinks": null,
+  "DraftCommitMsg": "",
+  "IncomingSavedCount": 0,
+  "LastCheckedRemotes": "2018-06-22T17:33:27.2364594+08:00",
+  "LastUsedView": 1,
+  "LogBranchFilterIndex": 0,
+  "OutgoingSavedCount": 0,
+  "RemoteProjectLinks": [
+    {
+      "$id": "8",
+      "BaseUrl": "https://www.bitbucket.org",
+      "Identifier": "sjodogne/orthanc-book",
+      "RemoteName": "default",
+      "Type": 1,
+      "Username": "aomiit",
+      "CloneUrl": null,
+      "DisplayName": "default: https://www.bitbucket.org"
+    }
+  ],
+  "SidebarExpandedItems": [
+    "文件状态",
+    "分支"
+  ],
+  "SidebarWidth": 210.0,
+  "SubtreeLinks": []
+}

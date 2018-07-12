@@ -1,0 +1,30 @@
+{# Import the theme's layout. #}
+{% extends "!layout.html" %}
+
+{# Custom CSS overrides #}
+{% set bootswatch_css_custom = ['_static/orthanc.css'] %}
+
+
+{% block footer %}
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      {% if theme_source_link_position == "footer" %}
+      <br/>
+      {% include "sourcelink.html" %}
+      {% endif %}
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      {% trans sphinx_version=sphinx_version|e %}使用<a href="http://sphinx-doc.org/">Sphinx</a>{{ sphinx_version }}创建.{% endtrans %}<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+{% endblock %}

@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>疑难排解 &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Troubleshooting DICOM communications" href="dicom.html" />
+    <link rel="prev" title="常见问题" href="../faq.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="troubleshooting">
+<span id="id1"></span><h1>疑难排解<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<p>一般来说，当你遇到问题时，一定要确保这一点，你使用的是`最新版本
+&lt;<a class="reference external" href="http://www.orthanc-server.com/download.php">http://www.orthanc-server.com/download.php</a>&gt;`__ 的Orthanc.</p>
+<p>还可以在 <a href="#id2"><span class="problematic" id="id3">`</span></a>Orthanc用户讨论组
+&lt;<a class="reference external" href="https://groups.google.com/forum/#!forum/orthanc-users">https://groups.google.com/forum/#!forum/orthanc-users</a>&gt;`__上进行搜索,
+或在最新的Orthanc Book（在本页顶部有一个搜索框）上搜索。你的问题可能已经讨论过了。</p>
+<div class="section" id="id4">
+<h2>开始<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">If <strong>Orthanc fails to start</strong> with the error “<strong>The TCP port of the DICOM
+server is privileged or already in use</strong>”, this means another software is
+already using the port Orthanc is trying to use.  Usually, this means
+that an other instance of Orthanc is running.  However, note that, by default,
+Orthanc uses port 4242 which might also be used by other software like
+a <a class="reference external" href="https://www.file.net/process/dsncservice.exe.html">Juniper VPN client</a>.
+To determine which other process is using the port:</p>
+<p>On Windows, you may use the <a class="reference external" href="https://en.wikipedia.org/wiki/Resource_Monitor">Resource Monitor</a>.
+In the <cite>Network</cite> tab, check the <cite>Listening Ports</cite>.</p>
+<p>On Linux, you may use this command line: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">ss</span> <span class="pre">--tcp</span> <span class="pre">--listen</span> <span class="pre">--numeric</span> <span class="pre">--processes</span></code>.</p>
+<p>Starting with version 1.3.0, the check at Orthanc startup is more robust
+(it also checks for UDP socket using the same port) and Orthanc 1.3.0 might
+display error messages that where not displayed by previous versions.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="orthanc-explorer">
+<h2>Orthanc Explorer<a class="headerlink" href="#orthanc-explorer" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><strong>I cannot login to Orthanc Explorer</strong>: For security reasons, access
+to Orthanc from remote hosts is disabled by default. Only the
+localhost is allowed to access Orthanc. You have to set the
+<code class="docutils literal notranslate"><span class="pre">RemoteAccessAllowed</span></code> option in the <a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">configuration file</span></a> to <code class="docutils literal notranslate"><span class="pre">true</span></code>. It is then strongly advised to set
+<code class="docutils literal notranslate"><span class="pre">AuthenticationEnabled</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> and to add a user to the
+<code class="docutils literal notranslate"><span class="pre">RegisteredUsers</span></code> option, also in the configuration file.</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h2>性能问题<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first"><strong>Run-time debug assertions</strong>: If performance is important to you,
+make sure to add the option <code class="docutils literal notranslate"><span class="pre">-DCMAKE_BUILD_TYPE=Release</span></code> when
+invoking <code class="docutils literal notranslate"><span class="pre">cmake</span></code> while <a class="reference internal" href="compiling.html#compiling"><span class="std std-ref">compiling Orthanc</span></a>. Indeed, by default, <a class="reference external" href="https://en.wikipedia.org/wiki/Assertion_(software_development)#Assertions_for_run-time_checking">run-time debug assertions</a>
+are enabled, which can seriously impact performance, especially if
+your Orthanc server stores a lot of DICOM instances.</p>
+<p>Note that the <a class="reference external" href="https://github.com/jodogne/OrthancDocker">official Docker images</a> of Orthanc &lt;= 1.0.0
+were not compiled in <code class="docutils literal notranslate"><span class="pre">Release</span></code> mode. As a consequence, to improve
+performance, make sure to use either the mainline version of the
+container (run <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">jodogne/orthanc</span></code> to ensure you use the
+most recent version of the mainline), or versions more recent than
+<code class="docutils literal notranslate"><span class="pre">jodogne/orthanc:1.1.0</span></code>.</p>
+</li>
+<li><p class="first"><strong>Orthanc slows down if storing many files</strong>: The default database
+engine that is built in Orthanc is <a class="reference external" href="https://www.sqlite.org/">SQLite</a>. As SQLite is above all a lightweight
+database engine, it is not designed to <a class="reference external" href="https://www.sqlite.org/whentouse.html">store very large datasets</a>. If you are sure that you
+have properly disabled run-time debug assertions (cf. above), but
+still experience degradation in performance over time, you should
+seriously consider switching to a more scalable database engine. To
+this end, you can notably check out the <a class="reference internal" href="../plugins/postgresql.html#postgresql"><span class="std std-ref">official PostgreSQL
+plugin</span></a>.</p>
+<p>As a rule of thumb, the performance of the default SQLite engine
+built in Orthanc should run fine up to about 50,000 DICOM instances.</p>
+</li>
+<li><p class="first"><strong>Orthanc Explorer is slow under Windows on the localhost</strong>:</p>
+<ul class="simple">
+<li>Favor <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> instead of <code class="docutils literal notranslate"><span class="pre">localhost</span></code> when specifying the
+network address of a server. Users have reported that this minor
+change <a class="reference external" href="https://groups.google.com/d/msg/orthanc-users/tTe28zR0nGk/Lvs0STJLAgAJ">can massively improve performance</a>
+on Windows. Starting with Orthanc 1.0.1, the samples from the
+source distribution have been adapted in this way.</li>
+<li>As an alternative, you can disable IPv6 support. This is a
+Windows-specific problem that is discussed <a class="reference external" href="http://superuser.com/questions/43823/google-chrome-is-slow-to-localhost">here</a>
+and <a class="reference external" href="http://stackoverflow.com/questions/1726585/firefox-and-chrome-slow-on-localhost-known-fix-doesnt-work-on-windows-7">here</a>.</li>
+</ul>
+</li>
+<li><p class="first">If you experience <strong>slow DICOM transfers under GNU/Linux</strong>, please
+read the <a class="reference external" href="https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=785400">following bug report</a>. This
+issue does <em>not</em> affect all the versions of GNU/Linux. A patch to
+this issue is shipped with the Orthanc source code. In order to take
+advantage of this patch, you need to statically link Orthanc against
+DCMTK by using the <code class="docutils literal notranslate"><span class="pre">-DUSE_SYSTEM_DCMTK=OFF</span></code> flag <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/LinuxCompilation.txt">when invoking
+CMake</a>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="windows">
+<h2>Windows特有问题<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Under Windows, Orthanc creates the “OrthancStorage” folder, and
+crashes with the error “<strong>SQLite: Unable to open the database</strong>”:
+Your directory name is either too long, or it contains special
+characters. Please try and run Orthanc in a folder with a simple
+name such as <code class="docutils literal notranslate"><span class="pre">C:\Orthanc</span></code>.</li>
+<li>If <strong>Orthanc crashes when handling one large DICOM file</strong>, this most
+probably indicates a memory allocation error. Indeed, the <a class="reference external" href="http://www.orthanc-server.com/download-windows.php">official
+Windows binaries</a> are compiled
+using a 32bit compiler. As a consequence, Orthanc only has access to
+less than 4GB of RAM. If this is an important limitation for you,
+precompiled command-line versions of Orthanc for Windows 64bit are
+available courtesy of <a class="reference external" href="http://www.osimis.io/en/download.html">Osimis</a>.</li>
+</ul>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

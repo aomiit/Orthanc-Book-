@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Collecting logs &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Orthanc identifiers" href="orthanc-ids.html" />
+    <link rel="prev" title="What DICOM viewer is compatible with Orthanc?" href="viewers.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="collecting-logs">
+<span id="log"></span><h1>Collecting logs<a class="headerlink" href="#collecting-logs" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="standard-logs">
+<h2>Standard logs<a class="headerlink" href="#standard-logs" title="Permalink to this headline">¶</a></h2>
+<p>Everytime the Orthanc service starts, it will generate
+a new log file in <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\Orthanc</span> <span class="pre">Server\Logs</span></code> on Windows
+and in <code class="docutils literal notranslate"><span class="pre">/var/log/orthanc/</span></code> on Linux.</p>
+<p>By default, on Windows, if the Orthanc service fails to start, it will
+retry to start 5 times and stop so it does not generate thousands of log files.</p>
+<p>Log files are named as <code class="docutils literal notranslate"><span class="pre">Orthanc.log.YYYYMMDD-hhmmss.ffff</span></code> including
+the date/time when Orthanc was started.</p>
+<p>Orthanc is not removing old logs so these log files might accumulate
+and consume lot’s of space.  It’s up to you to manage the logs folder
+to make sure you don’t fill your disk with logs.</p>
+</div>
+<div class="section" id="generating-an-exploitable-debug-log">
+<h2>Generating an exploitable debug log<a class="headerlink" href="#generating-an-exploitable-debug-log" title="Permalink to this headline">¶</a></h2>
+<p>By default, Orthanc logs only the <cite>WARNING</cite> and <cite>ERROR</cite> level
+logs.  For your log to be exploitable by the Orthanc community, you must
+generate them with the <code class="docutils literal notranslate"><span class="pre">--verbose</span></code> or <code class="docutils literal notranslate"><span class="pre">--trace</span></code> to get the <cite>INFO</cite>
+and <cite>TRACE</cite> information levels.  If you are using
+Orthanc at the command-line, simply add these flags and redirect the
+standard outputs to some log file.</p>
+<p>However, if you use packaged versions of Orthanc that runs the server
+in background, you will have to manually start Orthanc. The sections
+below explain how to achieve this goal with the officially supported
+packages.</p>
+<div class="section" id="under-windows">
+<h3>Under Windows<a class="headerlink" href="#under-windows" title="Permalink to this headline">¶</a></h3>
+<p>Under Windows, if you used the official installer:</p>
+<ol class="arabic">
+<li><p class="first">Download the <a class="reference external" href="http://www.orthanc-server.com/download-windows.php">precompiled command-line version</a> of Orthanc.</p>
+</li>
+<li><p class="first">Stop the Orthanc service. The actual process depends on your
+version of Windows.</p>
+</li>
+<li><p class="first">Copy the just-downloaded <code class="docutils literal notranslate"><span class="pre">Orthanc-1.3.2-Release.exe</span></code> together
+with your configuration file (that is by default located in
+<code class="docutils literal notranslate"><span class="pre">C:\Orthanc\Configuration.json</span></code>) into the same folder
+(e.g. <code class="docutils literal notranslate"><span class="pre">C:\Temp</span></code>).</p>
+</li>
+<li><p class="first">Type in a command-line shell, to generate the <code class="docutils literal notranslate"><span class="pre">Orthanc.log</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd C:\Temp
+$ Orthanc-1.3.2-Release.exe --verbose Configuration.json &gt; Orthanc.log 2&lt;&amp;1
+</pre></div>
+</div>
+</li>
+<li><p class="first">Restart the Orthanc service.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="under-debian-gnu-linux">
+<h3>Under Debian GNU/Linux<a class="headerlink" href="#under-debian-gnu-linux" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Stop the Orthanc service:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo /etc/init.d/orthanc stop
+</pre></div>
+</div>
+</li>
+<li><p class="first">Manually start Orthanc (using the same configuration as the
+service) and generate the log:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo -u orthanc /usr/sbin/Orthanc --verbose /etc/orthanc/ &gt; Orthanc.log 2&gt;&amp;1
+</pre></div>
+</div>
+</li>
+<li><p class="first">Restart the Orthanc service:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo /etc/init.d/orthanc start
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="under-docker">
+<h3>Under Docker<a class="headerlink" href="#under-docker" title="Permalink to this headline">¶</a></h3>
+<p>The command-line to be used is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -a stderr -p 4242:4242 -p 8042:8042 --rm jodogne/orthanc --verbose /etc/orthanc &gt; Orthanc.log 2&gt;&amp;1
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

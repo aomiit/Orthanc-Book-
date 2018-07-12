@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>匿名化和修改 &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="服务器端脚本Lua" href="lua.html" />
+    <link rel="prev" title="复制和升级" href="replication.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="anonymization">
+<span id="id1"></span><h1><a class="toc-backref" href="#id4">匿名化和修改</a><a class="headerlink" href="#anonymization" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#anonymization" id="id4">匿名化和修改</a><ul>
+<li><a class="reference internal" href="#id2" id="id5">单个实例的匿名化</a></li>
+<li><a class="reference internal" href="#id3" id="id6">单个实例的修改</a></li>
+<li><a class="reference internal" href="#studies-series" id="id7">Studies 或 Series的修改</a></li>
+<li><a class="reference internal" href="#patients" id="id8">Patients的修改</a></li>
+<li><a class="reference internal" href="#patients-studies-series" id="id9">Patients, Studies 或 Series的匿名化</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<dl class="docutils">
+<dt>Orthanc 0.5.0引入了DICOM资源的匿名化(例如 patients, studies, series 或</dt>
+<dd>instances)。 这一页简要说明如何使用这个特性。</dd>
+</dl>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id5">单个实例的匿名化</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Orthanc允许对DICOM实例进行匿名化并下载产生的匿名DICOM文件。
+匿名化包括删除DICOM标准2008或2017c(默认)的PS 3.15节Table E.1-1表中指定的所有标记。
+例如:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/6e67da51-d119d6ae-c5667437-87b9a8a5-0f07c49f/anonymize -X POST -d <span class="s1">&#39;{}&#39;</span> &gt; Anonymized.dcm
+</pre></div>
+</div>
+<p>It is possible to control how anonymization is achieved by specifying
+a JSON body:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/6e67da51-d119d6ae-c5667437-87b9a8a5-0f07c49f/anonymize -X POST -d <span class="s1">&#39;{&quot;Replace&quot;:{&quot;PatientName&quot;:&quot;Hello&quot;,&quot;0010-1001&quot;:&quot;World&quot;},&quot;Keep&quot;:[&quot;StudyDescription&quot;, &quot;SeriesDescription&quot;],&quot;KeepPrivateTags&quot;: true, &quot;DicomVersion&quot; : &quot;2017c&quot;}&#39;</span> &gt; Anonymized.dcm
+</pre></div>
+</div>
+<p>Explanations:</p>
+<ul class="simple">
+<li>New UUIDs are automatically generated for the study, the series and
+the instance.</li>
+<li>The DICOM tags can be specified either by their name
+(<code class="docutils literal notranslate"><span class="pre">PatientName</span></code>) or by their hexadecimal identifier (in the example
+above, <code class="docutils literal notranslate"><span class="pre">0010-1001</span></code> corresponds to <code class="docutils literal notranslate"><span class="pre">Other</span> <span class="pre">Patient</span> <span class="pre">Names</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">Replace</span></code> is an associative array that associates a DICOM tag with its
+new string value. The value is dynamically cast to the proper DICOM
+data type (an HTTP error will occur if the cast fails). Replacements
+are applied after all the tags to anonymize have been removed.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Keep</span></code> specifies a list of tags that should be preserved from full
+anonymization.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">KeepPrivateTags</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code> in the JSON request,
+private tags (i.e. manufacturer-specific tags) are not removed by
+the anonymization process. The default behavior consists in removing
+the private tags, as such tags can contain patient-specific
+information.</li>
+<li><code class="docutils literal notranslate"><span class="pre">DicomVersion</span></code> specifies which version of the DICOM standard shall be used
+for anonymization.  Allowed values are <code class="docutils literal notranslate"><span class="pre">2008</span></code> and <code class="docutils literal notranslate"><span class="pre">2017c</span></code> (default value
+if the parameter is absent).  This parameter has been introduced in Orthanc
+1.3.0.  In earlier version, the <code class="docutils literal notranslate"><span class="pre">2008</span></code> standard was used.</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id6">单个实例的修改</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>Orthanc allows to modify a set of specified tags in a single DICOM
+instance and to download the resulting anonymized DICOM
+file. Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/6e67da51-d119d6ae-c5667437-87b9a8a5-0f07c49f/modify -X POST -d <span class="s1">&#39;{&quot;Replace&quot;:{&quot;PatientName&quot;:&quot;hello&quot;,&quot;PatientID&quot;:&quot;world&quot;},&quot;Remove&quot;:[&quot;InstitutionName&quot;],&quot;RemovePrivateTags&quot;: true, &quot;Force&quot;: true}&#39;</span> &gt; Modified.dcm
+</pre></div>
+</div>
+<p>Remarks:</p>
+<ul class="simple">
+<li>The <code class="docutils literal notranslate"><span class="pre">Remove</span></code> array specifies the list of the tags to remove.</li>
+<li>The <code class="docutils literal notranslate"><span class="pre">Replace</span></code> associative array specifies the substitions to be applied
+(cf. anonymization).</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">RemovePrivateTags</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the private tags
+(i.e. manufacturer-specific tags) are removed.</li>
+<li>The <code class="docutils literal notranslate"><span class="pre">Force</span></code> option must be set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, in order to allow the
+modification of the <code class="docutils literal notranslate"><span class="pre">PatientID</span></code>, as such a modification of the
+<a class="reference internal" href="../dicom-guide.html#dicom-identifiers"><span class="std std-ref">DICOM identifiers</span></a> might lead to breaking
+the DICOM model of the real-world. In general, any explicit
+modification to one of the <code class="docutils literal notranslate"><span class="pre">PatientID</span></code>, <code class="docutils literal notranslate"><span class="pre">StudyInstanceUID</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SeriesInstanceUID</span></code>, and <code class="docutils literal notranslate"><span class="pre">SOPInstanceUID</span></code> requires <code class="docutils literal notranslate"><span class="pre">Force</span></code> to
+be set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, in order to prevent any unwanted side effect.</li>
+</ul>
+</div>
+<div class="section" id="studies-series">
+<h2><a class="toc-backref" href="#id7">Studies 或 Series的修改</a><a class="headerlink" href="#studies-series" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to modify all the instances from a study or from a
+series in a single request. In this case, the modified instances are
+stored back into the Orthanc store. Here is how to modify a series:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/series/95a6e2bf-9296e2cc-bf614e2f-22b391ee-16e010e0/modify -X POST -d <span class="s1">&#39;{&quot;Replace&quot;:{&quot;InstitutionName&quot;:&quot;My own clinic&quot;}}&#39;</span>
+</pre></div>
+</div>
+<p>The parameters are identical to those used to modify a single
+instance. Orthanc will answer a JSON message that tells where the
+modified series has been stored:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;3bd3d343-82879d86-da77321c-1d23fd6b-faa07bce&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Path&quot;</span> <span class="p">:</span> <span class="s2">&quot;/series/3bd3d343-82879d86-da77321c-1d23fd6b-faa07bce&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Similarly, here is an interaction to modify a study:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/studies/ef2ce55f-9342856a-aee23907-2667e859-9f3b734d/modify -X POST -d <span class="s1">&#39;{&quot;Replace&quot;:{&quot;InstitutionName&quot;:&quot;My own clinic&quot;}}&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;1c3f7bf4-85b4aa20-236e6315-5d450dcc-3c1bcf28&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Path&quot;</span> <span class="p">:</span> <span class="s2">&quot;/studies/1c3f7bf4-85b4aa20-236e6315-5d450dcc-3c1bcf28&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="patients">
+<h2><a class="toc-backref" href="#id8">Patients的修改</a><a class="headerlink" href="#patients" title="Permalink to this headline">¶</a></h2>
+<p>Starting with Orthanc 0.7.5, Orthanc can also modify all the instances
+of a patient with a single REST call. Here is a sample:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/patients/6fb47ef5-072f4557-3215aa29-f99515c1-6fa22bf0/modify -X POST -d <span class="s1">&#39;{&quot;Replace&quot;:{&quot;PatientID&quot;:&quot;Hello&quot;,&quot;PatientName&quot;:&quot;Sample patient name&quot;},&quot;Force&quot;:true}&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;ID&quot;</span> <span class="p">:</span> <span class="s2">&quot;f7ff9e8b-7bb2e09b-70935a5d-785e0cc5-d9d0abf0&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Path&quot;</span> <span class="p">:</span> <span class="s2">&quot;/patients/f7ff9e8b-7bb2e09b-70935a5d-785e0cc5-d9d0abf0&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;PatientID&quot;</span> <span class="p">:</span> <span class="s2">&quot;f7ff9e8b-7bb2e09b-70935a5d-785e0cc5-d9d0abf0&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;Type&quot;</span> <span class="p">:</span> <span class="s2">&quot;Patient&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Please note that, in this case, you have to set the value of the
+<code class="docutils literal notranslate"><span class="pre">PatientID</span> <span class="pre">(0010,0020)</span></code> tag for Orthanc to accept this modification:
+This is a security to prevent the merging of patient data before and
+after anonymization, if the user does not explicitly tell Orthanc to
+do so.</p>
+</div>
+<div class="section" id="patients-studies-series">
+<h2><a class="toc-backref" href="#id9">Patients, Studies 或 Series的匿名化</a><a class="headerlink" href="#patients-studies-series" title="Permalink to this headline">¶</a></h2>
+<p>Study and series can be anonymized the same way as they are modified:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/patients/6fb47ef5-072f4557-3215aa29-f99515c1-6fa22bf0/anonymize -X POST -d <span class="s1">&#39;{}&#39;</span>
+$ curl http://localhost:8042/studies/ef2ce55f-9342856a-aee23907-2667e859-9f3b734d/anonymize -X POST -d <span class="s1">&#39;{}&#39;</span>
+$ curl http://localhost:8042/series/95a6e2bf-9296e2cc-bf614e2f-22b391ee-16e010e0/anonymize -X POST -d <span class="s1">&#39;{}&#39;</span>
+</pre></div>
+</div>
+<p>As written above, the anonymization process can be fine-tuned by using
+a JSON body.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

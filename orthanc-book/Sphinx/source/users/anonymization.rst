@@ -1,0 +1,157 @@
+.. highlight:: bash
+.. _anonymization:
+
+匿名化和修改
+==============================
+
+.. contents::
+   :depth: 2
+
+Orthanc 0.5.0引入了DICOM资源的匿名化(例如 patients, studies, series 或
+ instances)。 这一页简要说明如何使用这个特性。
+
+
+单个实例的匿名化
+----------------------------------
+
+Orthanc允许对DICOM实例进行匿名化并下载产生的匿名DICOM文件。
+匿名化包括删除DICOM标准2008或2017c(默认)的PS 3.15节Table E.1-1表中指定的所有标记。
+例如::
+
+    $ curl http://localhost:8042/instances/6e67da51-d119d6ae-c5667437-87b9a8a5-0f07c49f/anonymize -X POST -d '{}' > Anonymized.dcm
+
+It is possible to control how anonymization is achieved by specifying
+a JSON body::
+
+    $ curl http://localhost:8042/instances/6e67da51-d119d6ae-c5667437-87b9a8a5-0f07c49f/anonymize -X POST -d '{"Replace":{"PatientName":"Hello","0010-1001":"World"},"Keep":["StudyDescription", "SeriesDescription"],"KeepPrivateTags": true, "DicomVersion" : "2017c"}' > Anonymized.dcm
+
+Explanations:
+
+* New UUIDs are automatically generated for the study, the series and
+  the instance.
+* The DICOM tags can be specified either by their name
+  (``PatientName``) or by their hexadecimal identifier (in the example
+  above, ``0010-1001`` corresponds to ``Other Patient Names``).
+* ``Replace`` is an associative array that associates a DICOM tag with its
+  new string value. The value is dynamically cast to the proper DICOM
+  data type (an HTTP error will occur if the cast fails). Replacements
+  are applied after all the tags to anonymize have been removed.
+* ``Keep`` specifies a list of tags that should be preserved from full
+  anonymization.
+* If ``KeepPrivateTags`` is set to ``true`` in the JSON request,
+  private tags (i.e. manufacturer-specific tags) are not removed by
+  the anonymization process. The default behavior consists in removing
+  the private tags, as such tags can contain patient-specific
+  information.
+* ``DicomVersion`` specifies which version of the DICOM standard shall be used
+  for anonymization.  Allowed values are ``2008`` and ``2017c`` (default value
+  if the parameter is absent).  This parameter has been introduced in Orthanc
+  1.3.0.  In earlier version, the ``2008`` standard was used.
+
+
+单个实例的修改
+---------------------------------
+
+Orthanc allows to modify a set of specified tags in a single DICOM
+instance and to download the resulting anonymized DICOM
+file. Example::
+
+    $ curl http://localhost:8042/instances/6e67da51-d119d6ae-c5667437-87b9a8a5-0f07c49f/modify -X POST -d '{"Replace":{"PatientName":"hello","PatientID":"world"},"Remove":["InstitutionName"],"RemovePrivateTags": true, "Force": true}' > Modified.dcm
+
+Remarks:
+
+* The ``Remove`` array specifies the list of the tags to remove.
+* The ``Replace`` associative array specifies the substitions to be applied
+  (cf. anonymization).
+* If ``RemovePrivateTags`` is set to ``true``, the private tags
+  (i.e. manufacturer-specific tags) are removed.
+* The ``Force`` option must be set to ``true``, in order to allow the
+  modification of the ``PatientID``, as such a modification of the
+  :ref:`DICOM identifiers <dicom-identifiers>` might lead to breaking
+  the DICOM model of the real-world. In general, any explicit
+  modification to one of the ``PatientID``, ``StudyInstanceUID``,
+  ``SeriesInstanceUID``, and ``SOPInstanceUID`` requires ``Force`` to
+  be set to ``true``, in order to prevent any unwanted side effect.
+
+
+Studies 或 Series的修改
+---------------------------------
+
+.. highlight:: bash
+
+It is possible to modify all the instances from a study or from a
+series in a single request. In this case, the modified instances are
+stored back into the Orthanc store. Here is how to modify a series::
+
+    $ curl http://localhost:8042/series/95a6e2bf-9296e2cc-bf614e2f-22b391ee-16e010e0/modify -X POST -d '{"Replace":{"InstitutionName":"My own clinic"}}'
+
+
+.. highlight:: json
+
+The parameters are identical to those used to modify a single
+instance. Orthanc will answer a JSON message that tells where the
+modified series has been stored::
+
+    {
+      "ID" : "3bd3d343-82879d86-da77321c-1d23fd6b-faa07bce",
+      "Path" : "/series/3bd3d343-82879d86-da77321c-1d23fd6b-faa07bce"
+    }
+
+
+.. highlight:: bash
+
+Similarly, here is an interaction to modify a study::
+
+    $ curl http://localhost:8042/studies/ef2ce55f-9342856a-aee23907-2667e859-9f3b734d/modify -X POST -d '{"Replace":{"InstitutionName":"My own clinic"}}'
+
+.. highlight:: json
+
+::
+
+    {
+      "ID" : "1c3f7bf4-85b4aa20-236e6315-5d450dcc-3c1bcf28",
+      "Path" : "/studies/1c3f7bf4-85b4aa20-236e6315-5d450dcc-3c1bcf28"
+    }
+
+
+Patients的修改
+------------------------
+
+.. highlight:: bash
+
+Starting with Orthanc 0.7.5, Orthanc can also modify all the instances
+of a patient with a single REST call. Here is a sample::
+
+    $ curl http://localhost:8042/patients/6fb47ef5-072f4557-3215aa29-f99515c1-6fa22bf0/modify -X POST -d '{"Replace":{"PatientID":"Hello","PatientName":"Sample patient name"},"Force":true}'
+
+.. highlight:: json
+
+::
+
+    {
+      "ID" : "f7ff9e8b-7bb2e09b-70935a5d-785e0cc5-d9d0abf0",
+      "Path" : "/patients/f7ff9e8b-7bb2e09b-70935a5d-785e0cc5-d9d0abf0",
+      "PatientID" : "f7ff9e8b-7bb2e09b-70935a5d-785e0cc5-d9d0abf0",
+      "Type" : "Patient"
+    }
+
+Please note that, in this case, you have to set the value of the
+``PatientID (0010,0020)`` tag for Orthanc to accept this modification:
+This is a security to prevent the merging of patient data before and
+after anonymization, if the user does not explicitly tell Orthanc to
+do so.
+
+
+Patients, Studies 或 Series的匿名化
+--------------------------------------------
+
+.. highlight:: bash
+
+Study and series can be anonymized the same way as they are modified::
+
+    $ curl http://localhost:8042/patients/6fb47ef5-072f4557-3215aa29-f99515c1-6fa22bf0/anonymize -X POST -d '{}'
+    $ curl http://localhost:8042/studies/ef2ce55f-9342856a-aee23907-2667e859-9f3b734d/anonymize -X POST -d '{}'
+    $ curl http://localhost:8042/series/95a6e2bf-9296e2cc-bf614e2f-22b391ee-16e010e0/anonymize -X POST -d '{}'
+
+As written above, the anonymization process can be fine-tuned by using
+a JSON body.

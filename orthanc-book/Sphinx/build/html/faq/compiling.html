@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Compiling Orthanc &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Terminology of advanced features" href="features.html" />
+    <link rel="prev" title="Configuring DICOM Query/Retrieve" href="query-retrieve.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="compiling-orthanc">
+<span id="compiling"></span><h1>Compiling Orthanc<a class="headerlink" href="#compiling-orthanc" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="under-gnu-linux">
+<h2>Under GNU/Linux<a class="headerlink" href="#under-gnu-linux" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Orthanc &gt;= 0.7.1: See the <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/LinuxCompilation.txt">build instructions</a>
+inside the source package.</li>
+<li>Orthanc &lt;= 0.7.0: See the <a class="reference internal" href="compiling-old.html#compiling-old"><span class="std std-ref">Old build instructions for GNU/Linux</span></a>.</li>
+</ul>
+</div>
+<div class="section" id="under-microsoft-windows">
+<h2>Under Microsoft Windows<a class="headerlink" href="#under-microsoft-windows" title="Permalink to this headline">¶</a></h2>
+<p>See the <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/INSTALL">build instructions for Windows</a> inside
+the source package.</p>
+</div>
+<div class="section" id="under-os-x">
+<h2>Under OS X<a class="headerlink" href="#under-os-x" title="Permalink to this headline">¶</a></h2>
+<p>The mainline of Orthanc can compile under Apple OS X, with the XCode
+compiler, since June 24th, 2014. See the <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/DarwinCompilation.txt">build instructions for
+Darwin</a>
+inside the source package.</p>
+</div>
+<div class="section" id="performance-warning">
+<h2>Performance warning<a class="headerlink" href="#performance-warning" title="Permalink to this headline">¶</a></h2>
+<p>If performance is important to you, make sure to add the option
+<code class="docutils literal notranslate"><span class="pre">-DCMAKE_BUILD_TYPE=Release</span></code> when invoking <code class="docutils literal notranslate"><span class="pre">cmake</span></code>. Indeed, by
+default, <a class="reference external" href="https://en.wikipedia.org/wiki/Assertion_(software_development)#Assertions_for_run-time_checking">run-time debug assertions</a>
+are enabled, which can seriously impact performance, especially if
+your Orthanc server stores a lot of DICOM instances.</p>
+</div>
+<div class="section" id="please-explain-the-build-infrastructure">
+<h2>Please explain the build infrastructure<a class="headerlink" href="#please-explain-the-build-infrastructure" title="Permalink to this headline">¶</a></h2>
+<p>The build infrastructure of Orthanc is based upon <a class="reference external" href="https://cmake.org/">CMake</a>. The build scripts are designed to embed all
+the third-party dependencies directly inside the Orthanc
+executable. This is the meaning of the <code class="docutils literal notranslate"><span class="pre">-DSTATIC_BUILD=ON</span></code> option,
+as described in the <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/INSTALL">INSTALL</a> file of Orthanc.</p>
+<p>Such a static linking is very desirable under Windows, since the
+Orthanc binaries do not depend on any external DLL, which results in a
+straightforward installation procedure (just download the Windows
+binaries and execute them), which eases the setup of the development
+machines (no external library is to be manually installed, everything
+is downloaded during the build configuration), and which avoids the
+<a class="reference external" href="https://en.wikipedia.org/wiki/Dll_hell">DLL hell</a>. As a downside,
+this makes our build infrastructure rather complex.</p>
+<p>Static linking is not as desirable under GNU/Linux than under
+Windows. GNU/Linux prefers software that dynamically links against the
+system-wide libraries: This is explained by the fact that whenever a
+third-party dependency benefits from a bugfix, any software that is
+linked against it also immediately benefits from this fix. This also
+reduces the size of the binaries as well as the build time. Under
+GNU/Linux, it is thus recommended to use the <code class="docutils literal notranslate"><span class="pre">-DSTATIC_BUILD=OFF</span></code>
+option whenever possible.</p>
+<p>When the dynamic build is used, some third-party dependencies may be
+unavailable or incompatible with Orthanc, depending on your GNU/Linux
+distribution. Some CMake options have thus been introduced to force
+the static linking against some individual third-party
+dependencies. Here are the most useful:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">-DUSE_SYSTEM_DCMTK=OFF</span></code> to statically link against DCMTK.</li>
+<li><code class="docutils literal notranslate"><span class="pre">-DUSE_SYSTEM_JSONCPP=OFF</span></code> to statically link against JsonCpp.</li>
+</ul>
+<p>You will also have to set the <code class="docutils literal notranslate"><span class="pre">-DALLOW_DOWNLOADS=ON</span></code> to explicitely
+allow the CMake script to download the source code of any required
+dependency. The source code of all these dependencies is self-hosted
+on the Web server running our official homepage.</p>
+<p>Please also note that the option <code class="docutils literal notranslate"><span class="pre">-DSTANDALONE_BUILD=ON</span></code> must be
+used whenever your plan to move the binaries or to install them on
+another computer. This option will embed all the external resource
+files (notably Orthanc Explorer) into the resulting executable. If
+this option is set to <code class="docutils literal notranslate"><span class="pre">OFF</span></code>, the resources will be read from the
+source directories.</p>
+</div>
+<div class="section" id="missing-uuid-dev-package">
+<h2>Missing <code class="docutils literal notranslate"><span class="pre">uuid-dev</span></code> package<a class="headerlink" href="#missing-uuid-dev-package" title="Permalink to this headline">¶</a></h2>
+<p>Orthanc might fail to compile, complaining about missing <code class="docutils literal notranslate"><span class="pre">uuid-dev</span></code> package.</p>
+<p>This problem seems to occur when fist building Orthanc without the
+<code class="docutils literal notranslate"><span class="pre">uuid-dev</span></code> package installed, then installing <code class="docutils literal notranslate"><span class="pre">uuid-dev</span></code>, then
+rebuilding Orthanc. It seems that the build scripts do not update the
+cached variable about the presence of <code class="docutils literal notranslate"><span class="pre">uuid-dev</span></code>.</p>
+<p>To solve this problem, <a class="reference external" href="https://groups.google.com/d/msg/orthanc-users/hQYulBBvJvs/S1Pm125o59gJ">as reported</a>
+by Peter Somlo, it is necessary to entirely remove the build directory
+(e.g. with <code class="docutils literal notranslate"><span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">Build</span></code>) and start again the build from a fresh
+directory.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

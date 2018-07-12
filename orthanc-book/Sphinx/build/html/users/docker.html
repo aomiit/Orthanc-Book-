@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Docker版本Orthanc &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="dockerorthanc">
+<h1><a class="toc-backref" href="#id7">Docker版本Orthanc</a><a class="headerlink" href="#dockerorthanc" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#dockerorthanc" id="id7">Docker版本Orthanc</a><ul>
+<li><a class="reference internal" href="#id1" id="id8">简介</a></li>
+<li><a class="reference internal" href="#orthanc" id="id9">运行Orthanc核心</a></li>
+<li><a class="reference internal" href="#id2" id="id10">启用了插件的使用</a></li>
+<li><a class="reference internal" href="#id3" id="id11">微调配置</a></li>
+<li><a class="reference internal" href="#id4" id="id12">持久化Orthanc数据库</a></li>
+<li><a class="reference internal" href="#id5" id="id13">全切片影像支持</a></li>
+<li><a class="reference internal" href="#dockerpostgresql-orthanc" id="id14">Docker中的PostgreSQL 与 Orthanc</a></li>
+<li><a class="reference internal" href="#id6" id="id15">调试</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id8">简介</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Docker_(software)">Docker images</a>
+for the Orthanc core and its official plugins are freely available on
+the <a class="reference external" href="https://hub.docker.com/u/jodogne/">DockerHub platform</a>. The
+source code of the corresponding Docker images is available on <a class="reference external" href="https://github.com/jodogne/OrthancDocker">GitHub</a>.</p>
+<p><em>Note for CentOS users:</em> The Docker environment might be difficult to
+configure on your platform. Hints are available on the <a class="reference external" href="https://groups.google.com/d/msg/orthanc-users/w-uPAknnRQc/-XhzBGSCAwAJ">Orthanc Users
+discussion group</a>.</p>
+</div>
+<div class="section" id="orthanc">
+<h2><a class="toc-backref" href="#id9">运行Orthanc核心</a><a class="headerlink" href="#orthanc" title="Permalink to this headline">¶</a></h2>
+<p>The following command will start the core of Orthanc, with all the
+plugins disabled:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm jodogne/orthanc
+</pre></div>
+</div>
+<p>Once Orthanc is running, use Mozilla Firefox at URL
+<a class="reference external" href="http://localhost:8042/">http://localhost:8042/</a> to interact with Orthanc. The default username
+is <code class="docutils literal notranslate"><span class="pre">orthanc</span></code> and its password is <code class="docutils literal notranslate"><span class="pre">orthanc</span></code>.</p>
+<p>The command above starts the mainline version of Orthanc, whose
+development is in continuous progress. Do not forget to regularly
+update the Docker image to benefit from the latest features:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker pull jodogne/orthanc
+</pre></div>
+</div>
+<p>If more stability is required, you can select the official release of
+Orthanc to be run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm jodogne/orthanc:1.3.2
+</pre></div>
+</div>
+<p>Passing additional command-line options (e.g. to make Orthanc verbose)
+can be done as follows (note the <code class="docutils literal notranslate"><span class="pre">/etc/orthanc</span></code> option that is
+required for Orthanc to find its configuration files):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm jodogne/orthanc /etc/orthanc --verbose
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id10">启用了插件的使用</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>The following command will run the mainline version of the Orthanc
+core, together with its <a class="reference internal" href="../plugins/webviewer.html#webviewer"><span class="std std-ref">Web viewer</span></a>, its
+<a class="reference internal" href="../plugins/postgresql.html#postgresql"><span class="std std-ref">PostgreSQL support</span></a>, its <a class="reference internal" href="../plugins/dicomweb.html#dicomweb"><span class="std std-ref">DICOMweb
+implementation</span></a>, and its <a class="reference internal" href="../plugins/wsi.html#wsi"><span class="std std-ref">whole-slide imaging viewer</span></a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm jodogne/orthanc-plugins
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id11">微调配置</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>For security reasons, you should at least protect your instance of
+Orthanc by changing this default user, in the <code class="docutils literal notranslate"><span class="pre">RegisteredUsers</span></code>
+<a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration option</span></a>. You will also probably
+need to fine-tune other parameters, notably the list of the DICOM
+modalities Orthanc knows about.</p>
+<p>You can generate a custom configuration file for Orthanc as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run --rm --entrypoint<span class="o">=</span>cat jodogne/orthanc /etc/orthanc/orthanc.json &gt; /tmp/orthanc.json
+</pre></div>
+</div>
+<p>Then, edit the just-generated file <code class="docutils literal notranslate"><span class="pre">/tmp/orthanc.json</span></code> and restart
+Orthanc with your updated configuration:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm -v /tmp/orthanc.json:/etc/orthanc/orthanc.json:ro jodogne/orthanc
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id12">持久化Orthanc数据库</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>The filesystem of Docker containers is volatile (its content is
+deleted once the container stops). You can make the Orthanc database
+persistent by mapping the <code class="docutils literal notranslate"><span class="pre">/var/lib/orthanc/db</span></code> folder of the
+container to some path in the filesystem of your Linux host, e.g.:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mkdir /tmp/orthanc-db
+$ sudo docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm -v /tmp/orthanc-db/:/var/lib/orthanc/db/ jodogne/orthanc:1.3.2
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id13">全切片影像支持</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">orthanc-plugins</span></code> image includes support for <a class="reference internal" href="../plugins/wsi.html#wsi"><span class="std std-ref">microscopic
+whole-slide imaging (WSI)</span></a>. For instance, the following command
+will start the WSI viewer plugin transparently together with Orthanc:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm --name orthanc-wsi jodogne/orthanc-plugins
+</pre></div>
+</div>
+<p>Note that we gave the name <code class="docutils literal notranslate"><span class="pre">orthanc-wsi</span></code> to this new Docker
+container. Then, the Dicomizer command-line tool can be invoked as
+follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -t -i --rm --link<span class="o">=</span>orthanc-wsi:orthanc --entrypoint<span class="o">=</span>OrthancWSIDicomizer -v /tmp/Source.tif:/tmp/Source.tif:ro jodogne/orthanc-plugins --username<span class="o">=</span>orthanc --password<span class="o">=</span>orthanc --orthanc<span class="o">=</span>http://orthanc:8042/ /tmp/Source.tif
+</pre></div>
+</div>
+<p>This command needs a few explanations:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">--link=orthanc-wsi:orthanc</span></code> links the container running the
+Dicomizer, to the Docker container running Orthanc that we started
+just before.</li>
+<li><code class="docutils literal notranslate"><span class="pre">--entrypoint=OrthancWSIDicomizer</span></code> specifies that the Dicomizer
+must be run instead of the Orthanc server.</li>
+<li><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">/tmp/Source.tif:/tmp/Source.tif:ro</span></code> maps the source image
+<code class="docutils literal notranslate"><span class="pre">/tmp/Source.tif</span></code> on the host computer into the Orthanc container
+as read-only file <code class="docutils literal notranslate"><span class="pre">/tmp/Source.tif</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">--orthanc=http://orthanc:8042/</span></code> instructs the Dicomizer to push
+images through the <code class="docutils literal notranslate"><span class="pre">--link</span></code> created above.</li>
+<li><code class="docutils literal notranslate"><span class="pre">--username=orthanc</span> <span class="pre">--password=orthanc</span></code> correspond to the default
+credentials of the <code class="docutils literal notranslate"><span class="pre">orthanc-plugins</span></code> image.</li>
+</ul>
+<p>Obviously, you are free to add all the options you wish (check out the
+<code class="docutils literal notranslate"><span class="pre">--help</span></code> flag to list these options). In particular, the
+<code class="docutils literal notranslate"><span class="pre">--dataset</span></code> option allows to specify DICOM tags, in the JSON file
+format, so as to include them in the resulting DICOM series (the
+option <code class="docutils literal notranslate"><span class="pre">--sample-dataset</span></code> prints a sample JSON file that has the
+expected format).</p>
+<p>If you have a source image that is not a hierarchical TIFF, you must
+instruct the Dicomizer to use <a class="reference external" href="http://openslide.org/">OpenSlide</a> to
+decode it by adding the <code class="docutils literal notranslate"><span class="pre">--openslide</span></code> option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -t -i --rm --link<span class="o">=</span>orthanc-wsi:orthanc --entrypoint<span class="o">=</span>OrthancWSIDicomizer -v /tmp/Source.svs:/tmp/Source.svs:ro jodogne/orthanc-plugins --username<span class="o">=</span>orthanc --password<span class="o">=</span>orthanc --orthanc<span class="o">=</span>http://orthanc:8042/ --openslide<span class="o">=</span>libopenslide.so /tmp/Source.svs
+</pre></div>
+</div>
+</div>
+<div class="section" id="dockerpostgresql-orthanc">
+<h2><a class="toc-backref" href="#id14">Docker中的PostgreSQL 与 Orthanc</a><a class="headerlink" href="#dockerpostgresql-orthanc" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to run both Orthanc and PostgreSQL inside Docker. First, start the official PostgreSQL container:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run --name some-postgres -e <span class="nv">POSTGRES_USER</span><span class="o">=</span>postgres -e <span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>pgpassword --rm postgres
+</pre></div>
+</div>
+<p>Open another shell, and create a database to host the Orthanc database:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -it --link some-postgres:postgres --rm postgres sh -c <span class="s1">&#39;echo &quot;CREATE DATABASE orthanc;&quot; | exec psql -h &quot;$POSTGRES_PORT_5432_TCP_ADDR&quot; -p &quot;$POSTGRES_PORT_5432_TCP_PORT&quot; -U postgres&#39;</span>
+</pre></div>
+</div>
+<p>You will have to type the password (cf. the environment variable
+<code class="docutils literal notranslate"><span class="pre">POSTGRES_PASSWORD</span></code> above that it set to <code class="docutils literal notranslate"><span class="pre">pgpassword</span></code>). Then,
+retrieve the IP and the port of the PostgreSQL container, together
+with the default Orthanc configuration file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker inspect --format <span class="s1">&#39;{{ .NetworkSettings.IPAddress }}&#39;</span> some-postgres
+$ sudo docker inspect --format <span class="s1">&#39;{{ .NetworkSettings.Ports }}&#39;</span> some-postgres
+$ sudo docker run --rm --entrypoint<span class="o">=</span>cat jodogne/orthanc-plugins /etc/orthanc/orthanc.json &gt; /tmp/orthanc.json
+</pre></div>
+</div>
+<p>Add the following section to <code class="docutils literal notranslate"><span class="pre">/tmp/orthanc.json</span></code> (adapting the
+values Host and Port to what docker inspect said above):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;PostgreSQL&quot; : {
+  &quot;EnableIndex&quot; : true,
+  &quot;EnableStorage&quot; : true,
+  &quot;Host&quot; : &quot;172.17.0.38&quot;,
+  &quot;Port&quot; : 5432,
+  &quot;Database&quot; : &quot;orthanc&quot;,
+  &quot;Username&quot; : &quot;postgres&quot;,
+  &quot;Password&quot; : &quot;pgpassword&quot;
+}
+</pre></div>
+</div>
+<p>Finally, you can start Orthanc:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm -v /tmp/orthanc.json:/etc/orthanc/orthanc.json:ro jodogne/orthanc-plugins
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h2><a class="toc-backref" href="#id15">调试</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>For debugging purpose, you can start an interactive bash session as
+follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -i -t --rm --entrypoint<span class="o">=</span>bash jodogne/orthanc
+$ sudo docker run -i -t --rm --entrypoint<span class="o">=</span>bash jodogne/orthanc-plugins
+</pre></div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

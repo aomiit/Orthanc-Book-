@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>插件 &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Web Viewer plugin" href="plugins/webviewer.html" />
+    <link rel="prev" title="通过Orthanc理解DICOM" href="dicom-guide.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integrations.html">集成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="plugins">
+<span id="id1"></span><h1><a class="toc-backref" href="#id5">插件</a><a class="headerlink" href="#plugins" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#plugins" id="id5">插件</a><ul>
+<li><a class="reference internal" href="#id2" id="id6">概览</a></li>
+<li><a class="reference internal" href="#plugins-official" id="id7">官方插件的索引</a><ul>
+<li><a class="reference internal" href="#from-university-hospital-of-liege" id="id8">From University Hospital of Liège</a></li>
+<li><a class="reference internal" href="#from-osimis" id="id9">From Osimis</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#plugins-contributed" id="id10">贡献插件的索引</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id6">概览</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>The core of Orthanc can be extended through <strong>plugins</strong>. A plugin
+takes the form of a shared library (<code class="docutils literal notranslate"><span class="pre">.DLL</span></code> under Windows, <code class="docutils literal notranslate"><span class="pre">.so</span></code>
+under GNU/Linux, <code class="docutils literal notranslate"><span class="pre">.dylib</span></code> under Apple OS X…). A plugin can do
+various things, among others:</p>
+<ul class="simple">
+<li>Serving new <strong>Web applications</strong> that have full access to the REST
+API of Orthanc, which makes easy to handle DICOM images from
+JavaScript code.</li>
+<li>Replacing <strong>the way DICOM images are decoded</strong> (e.g. the official
+<a class="reference internal" href="plugins/webviewer.html#webviewer"><span class="std std-ref">Web viewer plugin</span></a> introduces the decoding of
+JPEG2000 images, which is not available in the core of Orthanc).</li>
+<li>Replacing the default <strong>database back-end</strong> of Orthanc (that is built
+upon SQLite) by another (<a class="reference internal" href="plugins/postgresql.html#postgresql"><span class="std std-ref">PostgreSQL</span></a>, MySQL,
+SQL Server…).</li>
+<li>Creating <strong>new REST APIs</strong> on the top of the Orthanc built-in API (as in
+in the official <a class="reference internal" href="plugins/dicomweb.html#dicomweb"><span class="std std-ref">DICOMweb</span></a> plugin).</li>
+<li><strong>Reacting</strong> to the arrival of new DICOM images or other
+DICOM-related events so as to carry on automated processing.</li>
+<li>…</li>
+</ul>
+<p>Developers external to the official Orthanc project are <a class="reference internal" href="contributing.html#contributing"><span class="std std-ref">invited
+to contribute</span></a> to the C/C++ part of Orthanc by creating
+third-party plugins.  A specific section of the Orthanc Book explains
+<a class="reference internal" href="developers/creating-plugins.html#creating-plugins"><span class="std std-ref">how to create new Orthanc plugins</span></a>.</p>
+</div>
+<div class="section" id="plugins-official">
+<span id="id3"></span><h2><a class="toc-backref" href="#id7">官方插件的索引</a><a class="headerlink" href="#plugins-official" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="from-university-hospital-of-liege">
+<h3><a class="toc-backref" href="#id8">From University Hospital of Liège</a><a class="headerlink" href="#from-university-hospital-of-liege" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugins/webviewer.html">Web Viewer plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/dicomweb.html">DICOMweb plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/postgresql.html">PostgreSQL plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/wsi.html">Whole-slide microscopic imaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/worklists-plugin.html">Sample Modality Worklists plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/serve-folders.html">Sample Serve Folders plugin</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="from-osimis">
+<h3><a class="toc-backref" href="#id9">From Osimis</a><a class="headerlink" href="#from-osimis" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="plugins/authorization.html#authorization"><span class="std std-ref">Advanced authorization plugin</span></a></li>
+<li><a class="reference external" href="http://osimis.io/">Osimis</a> maintains an evolution of the
+official Web viewer plugin. The Osimis plugin adds tools for
+measuring, for viewing multiple series, and for split-pane. <a class="reference external" href="https://bitbucket.org/osimis/osimis-webviewer-plugin">Check
+out the source code</a>.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="plugins-contributed">
+<span id="id4"></span><h2><a class="toc-backref" href="#id10">贡献插件的索引</a><a class="headerlink" href="#plugins-contributed" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/ivmartel/dwv-orthanc-plugin">DWV Orthanc Plugin</a>: This plugin by
+Yves Martelli is based on <a class="reference external" href="https://github.com/ivmartel/dwv/wiki">dwv</a> and extends Orthanc with a
+Web viewer of DICOM images.</li>
+<li>Another Web viewer is provided courtesy of <a class="reference external" href="https://groups.google.com/d/msg/orthanc-users/EC5Z2KaM4Hs/MG3KkzhCDAAJ">Emsy Chan</a>.</li>
+<li><a class="reference external" href="http://www.vpireveal.com/">VPI Reveal</a> provides a plugin to
+“write the DICOM records in a normal Windows-readable file hierarchy
+(patient-study-series-DICOM file) at a location called
+<code class="docutils literal notranslate"><span class="pre">VPIStorage</span></code> that can then be imported into VPI Reveal.”  <a class="reference external" href="https://github.com/jodogne/OrthancContributed/tree/master/Plugins/orthancVPIRevealPlugin">Check
+out their source code</a>.</li>
+<li><a class="reference external" href="https://www.doc-cirrus.com/">Doc Cirrus</a> is working on <a class="reference external" href="https://en.wikipedia.org/wiki/MongoDB">MongoDB</a> database plugins. Check
+out their <a class="reference external" href="https://github.com/Doc-Cirrus/orthanc-mongodb">source code</a> and the
+<a class="reference external" href="https://github.com/jodogne/OrthancContributed/tree/master/Plugins/orthanc-mongodb">associated description</a>.</li>
+<li>Check out the <a class="reference external" href="https://github.com/jodogne/OrthancContributed/tree/master/Plugins">OrthancContributed repository on GitHub</a>, that
+might contain plugins that are not tracked in this list.</li>
+</ul>
+<p><em>Remark:</em> Do not hesitate to <a class="reference external" href="http://www.orthanc-server.com/static.php?page=contact">contact us</a> if you have
+developed a plugin so that we can include it in the list above!</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

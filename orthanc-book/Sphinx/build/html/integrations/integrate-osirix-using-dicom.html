@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>应用DICOM集成Osirix &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="使用DICOMWeb集成Osirix" href="integrate-osirix-using-dicomweb.html" />
+    <link rel="prev" title="应用DICOM集成Horos" href="integrate-horos-using-dicom.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="dicomosirix">
+<span id="integrate-osirix-using-dicom"></span><h1>应用DICOM集成Osirix<a class="headerlink" href="#dicomosirix" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="osirix">
+<h2>Osirix的配置<a class="headerlink" href="#osirix" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>In <code class="docutils literal notranslate"><span class="pre">Preferences-&gt;Listener</span></code>, activate and configure AETitle and Port (e.g. Osirix 11112).</li>
+<li>In <code class="docutils literal notranslate"><span class="pre">Preferences-&gt;Locations</span></code>, add a DICOM Node:<ul>
+<li>with the AET of your Orthanc instance (default is <code class="docutils literal notranslate"><span class="pre">ORTHANC</span></code>)</li>
+<li>with a name (eg <code class="docutils literal notranslate"><span class="pre">MYORTHANC</span></code>)</li>
+<li>with Retrieve method C-GET</li>
+<li>with Send Transfers syntax : Explicit Little Endian</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="orthanc">
+<h2>Orthanc的配置<a class="headerlink" href="#orthanc" title="Permalink to this headline">¶</a></h2>
+<p>Add the following <a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">configuration options</span></a>
+(obviously, adapt the IP address):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;DicomModalities&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;Horos&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Horos&quot;</span><span class="p">,</span> <span class="s2">&quot;192.168.253.53&quot;</span><span class="p">,</span> <span class="mi">11112</span> <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="osimisdocker-images">
+<h2>Osimis提供的Docker images的配置<a class="headerlink" href="#osimisdocker-images" title="Permalink to this headline">¶</a></h2>
+<p>This section applies if you are using the <a class="reference external" href="https://osimis.atlassian.net/wiki/spaces/OKB/pages/26738689/How+to+use+osimis+orthanc+Docker+images">Docker images by Osimis</a>
+to run Orthanc.</p>
+<p>Add Modality through Environmental variable in docker:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DICOM_MODALITIES</span><span class="o">=</span>
+<span class="p">{</span>
+  <span class="s2">&quot;Osirix&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Osirix&quot;</span><span class="p">,</span> <span class="s2">&quot;192.168.253.53&quot;</span><span class="p">,</span> <span class="mi">11112</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If using Orthanc in a docker container, map the Orthanc DICOM Port. Eg in docker-compose file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ports</span><span class="p">:</span>
+  <span class="o">-</span> <span class="s2">&quot;4242:4242&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

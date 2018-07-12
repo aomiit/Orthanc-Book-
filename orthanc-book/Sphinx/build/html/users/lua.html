@@ -1,0 +1,546 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>服务器端脚本Lua &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="通过Orthanc理解DICOM" href="../dicom-guide.html" />
+    <link rel="prev" title="匿名化和修改" href="anonymization.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="lua">
+<span id="id1"></span><h1><a class="toc-backref" href="#id3">服务器端脚本Lua</a><a class="headerlink" href="#lua" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#lua" id="id3">服务器端脚本Lua</a><ul>
+<li><a class="reference internal" href="#id2" id="id4">安装Lua脚本</a></li>
+<li><a class="reference internal" href="#lua-api" id="id5">Lua API</a><ul>
+<li><a class="reference internal" href="#callbacks-to-react-to-events" id="id6">Callbacks to react to events</a></li>
+<li><a class="reference internal" href="#calling-the-rest-api-of-orthanc" id="id7">Calling the REST API of Orthanc</a></li>
+<li><a class="reference internal" href="#general-purpose-functions" id="id8">General-purpose functions</a></li>
+<li><a class="reference internal" href="#origin-of-the-instances" id="id9">Origin of the instances</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#filtering-incoming-dicom-instances" id="id10">Filtering incoming DICOM instances</a></li>
+<li><a class="reference internal" href="#filtering-incoming-rest-requests" id="id11">Filtering incoming REST requests</a></li>
+<li><a class="reference internal" href="#auto-routing-of-dicom-images" id="id12">Auto-routing of DICOM images</a><ul>
+<li><a class="reference internal" href="#important-remarks-about-auto-routing" id="id13">Important remarks about auto-routing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fixing-c-find-requests" id="id14">Fixing C-Find requests</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Since release 0.5.2, Orthanc supports server-side scripting through
+the <a class="reference external" href="https://en.wikipedia.org/wiki/Lua_(programming_language)">Lua</a>
+scripting language. Thanks to this major feature, Orthanc can be tuned
+to specific medical workflows without being driven by an external
+script. This page summarizes the possibilities of Orthanc server-side
+scripting.</p>
+<p>Many other examples are <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/Resources/Samples/Lua/">available in the source distribution</a>.</p>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id4">安装Lua脚本</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>A custom Lua script can be installed either by the <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration
+file</span></a>, or by uploading it
+through the <a class="reference internal" href="../faq/rest-samples.html#rest-samples"><span class="std std-ref">REST API</span></a>.</p>
+<p>To install it by the <strong>configuration file</strong> method, you just have to
+specify the path to the file containing the Lua script in the
+<code class="docutils literal notranslate"><span class="pre">LuaScripts</span></code> variable.</p>
+<p>To upload a script stored in the file “<code class="docutils literal notranslate"><span class="pre">script.lua</span></code>” through the
+<strong>REST API</strong>, use the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl -X POST http://localhost:8042/tools/execute-script --data-binary @script.lua
+</pre></div>
+</div>
+<p>Pay attention to the fact that, contrarily to the scripts installed
+from the configuration file, the scripts installed through the REST
+API are non-persistent: They are discarded after a restart of Orthanc,
+which makes them useful for script prototyping. You can also interpret
+a single Lua command through the REST API:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl -X POST http://localhost:8042/tools/execute-script --data-binary <span class="s2">&quot;print(42)&quot;</span>
+</pre></div>
+</div>
+<p><em>Note:</em> The <code class="docutils literal notranslate"><span class="pre">--data-binary</span></code> cURL option is used instead of
+<code class="docutils literal notranslate"><span class="pre">--data</span></code> to prevent the interpretation of newlines by cURL, which is
+<a class="reference external" href="http://stackoverflow.com/questions/3872427/how-to-send-line-break-with-curl">mandatory for the proper evaluation</a> of the possible
+comments inside the Lua script.</p>
+</div>
+<div class="section" id="lua-api">
+<h2><a class="toc-backref" href="#id5">Lua API</a><a class="headerlink" href="#lua-api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="callbacks-to-react-to-events">
+<span id="lua-callbacks"></span><h3><a class="toc-backref" href="#id6">Callbacks to react to events</a><a class="headerlink" href="#callbacks-to-react-to-events" title="Permalink to this headline">¶</a></h3>
+<p>The Lua engine of Orthanc comes invokes the following callbacks that
+are triggered on various events. Here are the <strong>generic events</strong>:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">Initialize()</span></code>: Invoked as soon as the Orthanc server is started.</li>
+<li><code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">Finalize()</span></code>: Invoked just before the Orthanc server is stopped.</li>
+</ul>
+<p>Some <strong>permission-related events</strong> allow to filter incoming requests:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">ReceivedInstanceFilter(dicom,</span> <span class="pre">origin)</span></code>:
+Invoked to known whether an incoming DICOM instance should be
+accepted. <a class="reference internal" href="#lua-filter-dicom"><span class="std std-ref">See this section</span></a>. The <code class="docutils literal notranslate"><span class="pre">origin</span></code>
+parameter is <a class="reference internal" href="#lua-origin"><span class="std std-ref">documented separately</span></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">IncomingHttpRequestFilter(method,</span> <span class="pre">uri,</span> <span class="pre">ip,</span> <span class="pre">username,</span>
+<span class="pre">httpHeaders)</span></code>: Invoked to known whether a REST request should be
+accepted. <a class="reference internal" href="#lua-filter-rest"><span class="std std-ref">See this section</span></a>.</li>
+</ul>
+<p>Some <strong>DICOM-related events</strong> allow to react to the reception of
+new medical images:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">OnStoredInstance(instanceId,</span> <span class="pre">tags,</span> <span class="pre">metadata,</span> <span class="pre">origin)</span></code>:
+Invoked whenever a new instance has been stored into Orthanc.
+This is especially useful for <a class="reference internal" href="#lua-auto-routing"><span class="std std-ref">Auto-routing of DICOM images</span></a>. The <code class="docutils literal notranslate"><span class="pre">origin</span></code>
+parameter is <a class="reference internal" href="#lua-origin"><span class="std std-ref">documented separately</span></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">OnStablePatient(patientId,</span> <span class="pre">tags,</span> <span class="pre">metadata)</span></code>: Invoked
+whenever a patient has not received any new instance for a certain
+amount of time (cf. the option <code class="docutils literal notranslate"><span class="pre">StableAge</span></code> in the
+<a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration file</span></a>). The <a class="reference internal" href="../faq/orthanc-ids.html#orthanc-ids"><span class="std std-ref">identifier</span></a> of the patient is provided, together with her DICOM
+tags and her <a class="reference internal" href="../faq/features.html#metadata"><span class="std std-ref">metadata</span></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">OnStableSeries(seriesId,</span> <span class="pre">tags,</span> <span class="pre">metadata)</span></code>: Invoked
+whenever a series has not received any new instance for a certain
+amount of time.</li>
+<li><code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">OnStableStudy(studyId,</span> <span class="pre">tags,</span> <span class="pre">metadata)</span></code>: Invoked
+whenever a study has not received any new instance for a certain
+amount of time.</li>
+<li><code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">IncomingFindRequestFilter(source,</span> <span class="pre">origin)</span></code>: Invoked
+whenever Orthanc receives an incoming C-Find query through the DICOM
+protocol. This allows to inspect the content of the C-Find query,
+and possibly modify it if a patch is needed for some manufacturer. A
+<a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/Resources/Samples/Lua/IncomingFindRequestFilter.lua">sample script is available</a>.</li>
+</ul>
+<p>Furthermore, whenever a DICOM association is negotiated for C-Store
+SCP, several callbacks are successively invoked to specify which
+<strong>transfer syntaxes</strong> are accepted for the association. These
+callbacks are listed in <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/src/default/Resources/Samples/Lua/TransferSyntaxEnable.lua">this sample script</a>.</p>
+<p><em>Note:</em> All of these callbacks are guaranteed to be <strong>invoked in
+mutual exclusion</strong>. This implies that Lua scripting in Orthanc does
+not support any kind of concurrency.</p>
+</div>
+<div class="section" id="calling-the-rest-api-of-orthanc">
+<span id="lua-rest"></span><h3><a class="toc-backref" href="#id7">Calling the REST API of Orthanc</a><a class="headerlink" href="#calling-the-rest-api-of-orthanc" title="Permalink to this headline">¶</a></h3>
+<p>Lua scripts have <a class="reference internal" href="rest.html#rest"><span class="std std-ref">full access to the REST API</span></a> of Orthanc
+through the following functions:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">RestApiGet(uri,</span> <span class="pre">builtin)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">RestApiPost(uri,</span> <span class="pre">body,</span> <span class="pre">builtin)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">RestApiPut(uri,</span> <span class="pre">body,</span> <span class="pre">builtin)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">RestApiDelete(uri,</span> <span class="pre">builtin)</span></code></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">uri</span></code> arguments specifies the URI against which to make the
+request, and <code class="docutils literal notranslate"><span class="pre">body</span></code> is a string containing the body of POST/PUT
+request.  The <code class="docutils literal notranslate"><span class="pre">builtin</span></code> parameter is an optional Boolean that
+specifies whether the request targets only the built-in REST API of
+Orthanc (if set to <code class="docutils literal notranslate"><span class="pre">true</span></code>), or the full the REST API after being
+tainted by the plugins (if set to <code class="docutils literal notranslate"><span class="pre">false</span></code>).</p>
+</div>
+<div class="section" id="general-purpose-functions">
+<h3><a class="toc-backref" href="#id8">General-purpose functions</a><a class="headerlink" href="#general-purpose-functions" title="Permalink to this headline">¶</a></h3>
+<p>The Lua engine of Orthanc contain several general-purpose ancillary
+functions:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">PrintRecursive(v)</span></code> recursively prints the content of a <a class="reference external" href="http://www.lua.org/pil/2.5.html">Lua table</a> to the log file of Orthanc.</li>
+<li><code class="docutils literal notranslate"><span class="pre">ParseJson(s)</span></code> converts a string encoded in the <a class="reference external" href="https://en.wikipedia.org/wiki/JSON">JSON format</a> to a Lua table.</li>
+<li><code class="docutils literal notranslate"><span class="pre">DumpJson(v,</span> <span class="pre">keepStrings)</span></code> encodes a Lua table as a JSON string.
+Setting the optional argument <code class="docutils literal notranslate"><span class="pre">keepStrings</span></code> (available from
+release 0.9.5) to <code class="docutils literal notranslate"><span class="pre">true</span></code> prevents the automatic conversion of
+strings to integers.</li>
+<li><code class="docutils literal notranslate"><span class="pre">GetOrthancConfiguration()</span></code> returns a Lua table containing the
+content of the <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration files</span></a> of
+Orthanc.</li>
+</ul>
+<p>Similarly to the functions to <a class="reference internal" href="#lua-rest"><span class="std std-ref">call the REST API of Orthanc</span></a>, several functions are available to make generic HTTP
+requests to Web services:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">HttpGet(url,</span> <span class="pre">headers)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">HttpPost(url,</span> <span class="pre">body,</span> <span class="pre">headers)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">HttpPut(url,</span> <span class="pre">body,</span> <span class="pre">headers)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">HttpDelete(url,</span> <span class="pre">headers)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">SetHttpCredentials(username,</span> <span class="pre">password)</span></code> can be used to setup the
+HTTP credentials.</li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">headers</span></code> argument is optional and has been added in release
+1.2.1. It allows to set the HTTP headers for the HTTP client request.</p>
+</div>
+<div class="section" id="origin-of-the-instances">
+<span id="lua-origin"></span><h3><a class="toc-backref" href="#id9">Origin of the instances</a><a class="headerlink" href="#origin-of-the-instances" title="Permalink to this headline">¶</a></h3>
+<p>Whenever Orthanc decides whether it should should store a new instance
+(cf. the <code class="docutils literal notranslate"><span class="pre">ReceivedInstanceFilter()</span></code> callback), or whenever it has
+actually stored a new instance (cf. the <code class="docutils literal notranslate"><span class="pre">OnStoredInstance</span></code>
+callback), an <code class="docutils literal notranslate"><span class="pre">origin</span></code> parameter is provided. This parameter is a
+<a class="reference external" href="http://www.lua.org/pil/2.5.html">Lua table</a> that describes from
+which Orthanc subsystem the new instance comes from.</p>
+<p>There are 4 possible subsystems, that can be distinguished according
+to the value of <code class="docutils literal notranslate"><span class="pre">origin[&quot;RequestOrigin&quot;]</span></code>:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">RestApi</span></code>: The instance originates from some HTTP request to the REST
+API. In this case, the <code class="docutils literal notranslate"><span class="pre">RemoteIp</span></code> and <code class="docutils literal notranslate"><span class="pre">Username</span></code> fields are
+available in <code class="docutils literal notranslate"><span class="pre">origin</span></code>. They respectively describe the IP address
+of the HTTP client, and the username that was used for HTTP
+authentication (as defined in the <code class="docutils literal notranslate"><span class="pre">RegisteredUsers</span></code>
+<a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration variable</span></a>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">DicomProtocol</span></code>: The instance originates from a DICOM C-Store.
+The fields <code class="docutils literal notranslate"><span class="pre">RemoteIp</span></code>, <code class="docutils literal notranslate"><span class="pre">RemoteAet</span></code> and <code class="docutils literal notranslate"><span class="pre">CalledAet</span></code>
+respectively provide the IP address of the DICOM SCU (client), the
+application entity title of the DICOM SCU client, and the
+application entity title of the Orthanc SCP server. The
+<code class="docutils literal notranslate"><span class="pre">CalledAet</span></code> can be used for <a class="reference internal" href="#lua-auto-routing"><span class="std std-ref">advanced auto-routing scenarios</span></a>, when a single instance of Orthanc acts as a
+proxy for several DICOM SCU clients.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Lua</span></code>: The instance originates from a Lua script.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Plugins</span></code>: The instance originates from a plugin.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="filtering-incoming-dicom-instances">
+<span id="lua-filter-dicom"></span><h2><a class="toc-backref" href="#id10">Filtering incoming DICOM instances</a><a class="headerlink" href="#filtering-incoming-dicom-instances" title="Permalink to this headline">¶</a></h2>
+<p>Each time a DICOM instance is received by Orthanc (either through the
+DICOM protocol or through the REST API), the
+<code class="docutils literal notranslate"><span class="pre">ReceivedInstanceFilter()</span></code> Lua function is invoked. If this callback
+returns <code class="docutils literal notranslate"><span class="pre">true</span></code>, the instance is accepted for storage. If it returns
+<code class="docutils literal notranslate"><span class="pre">false</span></code>, the instance is discarded. This mechanism can be used to
+filter the incoming DICOM instances. Here is an example of a Lua
+filter that only allows incoming instances of MR modality:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">ReceivedInstanceFilter</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
+   <span class="c1">-- Only allow incoming MR images</span>
+   <span class="kr">if</span> <span class="n">dicom</span><span class="p">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="s1">&#39;MR&#39;</span> <span class="kr">then</span>
+      <span class="kr">return</span> <span class="kc">true</span>
+   <span class="kr">else</span>
+      <span class="kr">return</span> <span class="kc">false</span>
+   <span class="kr">end</span>
+<span class="kr">end</span>
+</pre></div>
+</div>
+<p>The argument dicom corresponds to a <a class="reference external" href="http://www.lua.org/pil/2.5.html">Lua table</a> (i.e. an associative array) that
+contains the DICOM tags of the incoming instance. For debugging
+purpose, you can print this structure as follows:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">ReceivedInstanceFilter</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
+   <span class="n">PrintRecursive</span><span class="p">(</span><span class="n">dicom</span><span class="p">)</span>
+   <span class="c1">-- Accept all incoming instances (default behavior)</span>
+   <span class="kr">return</span> <span class="kc">true</span>
+<span class="kr">end</span>
+</pre></div>
+</div>
+<p>The argument <code class="docutils literal notranslate"><span class="pre">origin</span></code> is <a class="reference internal" href="#lua-origin"><span class="std std-ref">documented separately</span></a>.</p>
+</div>
+<div class="section" id="filtering-incoming-rest-requests">
+<span id="lua-filter-rest"></span><h2><a class="toc-backref" href="#id11">Filtering incoming REST requests</a><a class="headerlink" href="#filtering-incoming-rest-requests" title="Permalink to this headline">¶</a></h2>
+<p>Lua scripting can be used to control the access to the various URI of
+the REST API. Each time an incoming HTTP request is received, the
+<code class="docutils literal notranslate"><span class="pre">IncomingHttpRequestFilter()</span></code> Lua function is called. The access to
+the resource is granted if and only if this callback script returns
+<code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>This mechanism can be used to implement fine-grained <a class="reference external" href="https://en.wikipedia.org/wiki/Access_control_list">access control
+lists</a>. Here is
+an example of a Lua script that limits POST, PUT and DELETE requests
+to an user that is called “admin”:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">IncomingHttpRequestFilter</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">httpHeaders</span><span class="p">)</span>
+   <span class="c1">-- Only allow GET requests for non-admin users</span>
+
+  <span class="kr">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span> <span class="kr">then</span>
+      <span class="kr">return</span> <span class="kc">true</span>
+   <span class="kr">elseif</span> <span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;admin&#39;</span> <span class="kr">then</span>
+      <span class="kr">return</span> <span class="kc">true</span>
+   <span class="kr">else</span>
+      <span class="kr">return</span> <span class="kc">false</span>
+   <span class="kr">end</span>
+<span class="kr">end</span>
+</pre></div>
+</div>
+<p>Here is a description of the arguments of this Lua callback:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">method</span></code>: The HTTP method (GET, POST, PUT or DELETE).</li>
+<li><code class="docutils literal notranslate"><span class="pre">uri</span></code>: The path to the resource (e.g. <code class="docutils literal notranslate"><span class="pre">/tools/generate-uid</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">ip</span></code>: The IP address of the host that has issued the HTTP request (e.g. <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">username</span></code>: If HTTP Basic Authentication is enabled in the
+<a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration file</span></a>, the name of the user that
+has issued the HTTP request (as defined in the <code class="docutils literal notranslate"><span class="pre">RegisteredUsers</span></code>
+configuration variable). If the authentication is disabled, this
+argument is set to the empty string.</li>
+<li><code class="docutils literal notranslate"><span class="pre">httpHeaders</span></code>: The HTTP headers of the incoming request. This
+argument is available since Orthanc 1.0.1. It is useful if the
+authentication should be achieved through tokens, for instance
+against a <a class="reference external" href="https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol">LDAP</a>
+or <a class="reference external" href="https://en.wikipedia.org/wiki/OAuth">OAuth2</a> server.</li>
+</ul>
+</div>
+<div class="section" id="auto-routing-of-dicom-images">
+<span id="lua-auto-routing"></span><h2><a class="toc-backref" href="#id12">Auto-routing of DICOM images</a><a class="headerlink" href="#auto-routing-of-dicom-images" title="Permalink to this headline">¶</a></h2>
+<p>Since release 0.8.0, the routing of DICOM flows can be very easily
+automated with Orthanc. All you have to do is to declare your
+destination modality in the <a class="reference internal" href="configuration.html#configuration"><span class="std std-ref">configuration file</span></a>
+(section <code class="docutils literal notranslate"><span class="pre">DicomModalities</span></code>), then to create and install a Lua
+script. For instance, here is a sample script:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">OnStoredInstance</span><span class="p">(</span><span class="n">instanceId</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+  <span class="n">Delete</span><span class="p">(</span><span class="n">SendToModality</span><span class="p">(</span><span class="n">instanceId</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">))</span>
+<span class="kr">end</span>
+</pre></div>
+</div>
+<p>If this script is loaded into Orthanc, whenever a new DICOM instance
+is received by Orthanc, it will be routed to the modality whose
+symbolic name is <code class="docutils literal notranslate"><span class="pre">sample</span></code> (through a Store-SCU command), then it
+will be removed from Orthanc. In other words, this is a <strong>one-liner
+script to implement DICOM auto-routing</strong>.</p>
+<p>Very importantly, thanks to this feature, you do not have to use the
+REST API or to create external scripts in order to automate simple
+imaging flows. The scripting engine is entirely contained inside the
+Orthanc core system.</p>
+<p>Thanks to Lua expressiveness, you can also implement conditional
+auto-routing. For instance, if you wish to route only patients whose
+name contains “David”, you would simply write:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">OnStoredInstance</span><span class="p">(</span><span class="n">instanceId</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+   <span class="c1">-- Extract the value of the &quot;PatientName&quot; DICOM tag</span>
+   <span class="kd">local</span> <span class="n">patientName</span> <span class="o">=</span> <span class="nb">string.lower</span><span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;PatientName&#39;</span><span class="p">])</span>
+
+  <span class="kr">if</span> <span class="nb">string.find</span><span class="p">(</span><span class="n">patientName</span><span class="p">,</span> <span class="s1">&#39;david&#39;</span><span class="p">)</span> <span class="o">~=</span> <span class="kc">nil</span> <span class="kr">then</span>
+      <span class="c1">-- Only route patients whose name contains &quot;David&quot;</span>
+      <span class="n">Delete</span><span class="p">(</span><span class="n">SendToModality</span><span class="p">(</span><span class="n">instanceId</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">))</span>
+
+  <span class="kr">else</span>
+      <span class="c1">-- Delete the patients that are not called &quot;David&quot;</span>
+      <span class="n">Delete</span><span class="p">(</span><span class="n">instanceId</span><span class="p">)</span>
+   <span class="kr">end</span>
+<span class="kr">end</span>
+</pre></div>
+</div>
+<p>Besides <code class="docutils literal notranslate"><span class="pre">SendToModality()</span></code>, a mostly identical function with the
+same arguments called <code class="docutils literal notranslate"><span class="pre">SendToPeer()</span></code> can be used to route instances
+to <a class="reference internal" href="../faq/features.html#peers"><span class="std std-ref">Orthanc peers</span></a>.  It is also possible to modify the
+received instances before routing them. For instance, here is how you
+would replace the <code class="docutils literal notranslate"><span class="pre">StationName</span></code> DICOM tag:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">OnStoredInstance</span><span class="p">(</span><span class="n">instanceId</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+   <span class="c1">-- Ignore the instances that result from a modification to avoid</span>
+   <span class="c1">-- infinite loops</span>
+   <span class="kr">if</span> <span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;ModifiedFrom&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="ow">and</span>
+       <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;AnonymizedFrom&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span><span class="p">)</span> <span class="kr">then</span>
+
+     <span class="c1">-- The tags to be replaced</span>
+      <span class="kd">local</span> <span class="n">replace</span> <span class="o">=</span> <span class="p">{}</span>
+      <span class="n">replace</span><span class="p">[</span><span class="s1">&#39;StationName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;My Medical Device&#39;</span>
+
+     <span class="c1">-- The tags to be removed</span>
+      <span class="kd">local</span> <span class="n">remove</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;MilitaryRank&#39;</span> <span class="p">}</span>
+
+     <span class="c1">-- Modify the instance, send it, then delete the modified instance</span>
+      <span class="n">Delete</span><span class="p">(</span><span class="n">SendToModality</span><span class="p">(</span><span class="n">ModifyInstance</span><span class="p">(</span><span class="n">instanceId</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">remove</span><span class="p">,</span> <span class="kc">true</span><span class="p">),</span> <span class="s1">&#39;sample&#39;</span><span class="p">))</span>
+
+     <span class="c1">-- Delete the original instance</span>
+      <span class="n">Delete</span><span class="p">(</span><span class="n">instanceId</span><span class="p">)</span>
+   <span class="kr">end</span>
+<span class="kr">end</span>
+</pre></div>
+</div>
+<div class="section" id="important-remarks-about-auto-routing">
+<h3><a class="toc-backref" href="#id13">Important remarks about auto-routing</a><a class="headerlink" href="#important-remarks-about-auto-routing" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">SendToModality()</span></code>, <code class="docutils literal notranslate"><span class="pre">SendToPeer()</span></code>, <code class="docutils literal notranslate"><span class="pre">ModifyInstance()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Delete()</span></code> functions are for the most basic cases of auto-routing
+(implying a single DICOM instance, and possibly a basic modification
+of this instance). The <code class="docutils literal notranslate"><span class="pre">ModifyInstance()</span></code> function <a class="reference external" href="https://groups.google.com/d/msg/orthanc-users/hmv2y-LgKm8/oMAuGJWMBgAJ">could also lead
+to problems</a>
+if it deals with tags wrongly interpreted as numbers by Lua.</p>
+<p>For more evolved auto-routing scenarios, remember that Lua scripts
+<a class="reference internal" href="#lua-rest"><span class="std std-ref">have full to the REST API of Orthanc</span></a>. This is
+illustrated by the <code class="docutils literal notranslate"><span class="pre">AutoroutingModification.lua</span></code> sample available in
+the source distribution of Orthanc:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">OnStoredInstance</span><span class="p">(</span><span class="n">instanceId</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
+   <span class="c1">-- Ignore the instances that result from the present Lua script to</span>
+   <span class="c1">-- avoid infinite loops</span>
+   <span class="kr">if</span> <span class="n">origin</span><span class="p">[</span><span class="s1">&#39;RequestOrigin&#39;</span><span class="p">]</span> <span class="o">~=</span> <span class="s1">&#39;Lua&#39;</span> <span class="kr">then</span>
+
+      <span class="c1">-- The tags to be replaced</span>
+      <span class="kd">local</span> <span class="n">replace</span> <span class="o">=</span> <span class="p">{}</span>
+      <span class="n">replace</span><span class="p">[</span><span class="s1">&#39;StationName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;My Medical Device&#39;</span>
+      <span class="n">replace</span><span class="p">[</span><span class="s1">&#39;0031-1020&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Some private tag&#39;</span>
+
+      <span class="c1">-- The tags to be removed</span>
+      <span class="kd">local</span> <span class="n">remove</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;MilitaryRank&#39;</span> <span class="p">}</span>
+
+      <span class="c1">-- Modify the instance</span>
+      <span class="kd">local</span> <span class="n">command</span> <span class="o">=</span> <span class="p">{}</span>
+      <span class="n">command</span><span class="p">[</span><span class="s1">&#39;Replace&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace</span>
+      <span class="n">command</span><span class="p">[</span><span class="s1">&#39;Remove&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">remove</span>
+      <span class="kd">local</span> <span class="n">modifiedFile</span> <span class="o">=</span> <span class="n">RestApiPost</span><span class="p">(</span><span class="s1">&#39;/instances/&#39;</span> <span class="o">..</span> <span class="n">instanceId</span> <span class="o">..</span> <span class="s1">&#39;/modify&#39;</span><span class="p">,</span> <span class="n">DumpJson</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="kc">true</span><span class="p">))</span>
+
+      <span class="c1">-- Upload the modified instance to the Orthanc database so that</span>
+      <span class="c1">-- it can be sent by Orthanc to other modalities</span>
+      <span class="kd">local</span> <span class="n">modifiedId</span> <span class="o">=</span> <span class="n">ParseJson</span><span class="p">(</span><span class="n">RestApiPost</span><span class="p">(</span><span class="s1">&#39;/instances/&#39;</span><span class="p">,</span> <span class="n">modifiedFile</span><span class="p">))</span> <span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span>
+
+      <span class="c1">-- Send the modified instance to another modality</span>
+      <span class="n">RestApiPost</span><span class="p">(</span><span class="s1">&#39;/modalities/sample/store&#39;</span><span class="p">,</span> <span class="n">modifiedId</span><span class="p">)</span>
+
+      <span class="c1">-- Delete the original and the modified instances</span>
+      <span class="n">RestApiDelete</span><span class="p">(</span><span class="s1">&#39;/instances/&#39;</span> <span class="o">..</span> <span class="n">instanceId</span><span class="p">)</span>
+      <span class="n">RestApiDelete</span><span class="p">(</span><span class="s1">&#39;/instances/&#39;</span> <span class="o">..</span> <span class="n">modifiedId</span><span class="p">)</span>
+   <span class="kr">end</span>
+<span class="kr">end</span>
+</pre></div>
+</div>
+<p>Also note that <a class="reference internal" href="#lua-callbacks"><span class="std std-ref">other callbacks are available</span></a>
+(<code class="docutils literal notranslate"><span class="pre">OnStablePatient()</span></code>, <code class="docutils literal notranslate"><span class="pre">OnStableStudy()</span></code> and <code class="docutils literal notranslate"><span class="pre">OnStableSeries()</span></code>)
+to react to other events than the reception of a single instance
+with <code class="docutils literal notranslate"><span class="pre">OnStoredInstance()</span></code>.</p>
+</div>
+</div>
+<div class="section" id="fixing-c-find-requests">
+<span id="lua-fix-cfind"></span><h2><a class="toc-backref" href="#id14">Fixing C-Find requests</a><a class="headerlink" href="#fixing-c-find-requests" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../dicom-guide.html#dicom-find"><span class="std std-ref">C-Find requests</span></a> are sometimes interpreted
+differently by different DICOM servers (e.g. the <code class="docutils literal notranslate"><span class="pre">*</span></code> wildcard, as
+<a class="reference external" href="https://groups.google.com/d/msg/orthanc-users/3g7V7kqr3g0/IREL88RWAwAJ">reported by users</a>),
+and sometimes a querying modality might set unexpected DICOM tags
+(cf. <a class="reference external" href="https://groups.google.com/d/msg/orthanc-users/PLWKqVVaXLs/n_0x4vKhAgAJ">this real-world example</a>). In
+such situations, it is possible to dynamically fix incoming or
+outgoing C-Find queries using a Lua script.</p>
+<p>Fixing incoming C-Find requests can be done by implementing the
+<code class="docutils literal notranslate"><span class="pre">IncomingFindRequestFilter(query,</span> <span class="pre">origin)</span></code> callback that is called
+whenever the Orthanc C-Find SCP is queried by a remote modality. For
+instance, here is Lua script to remove a private tag that is specified
+by some manufacturer:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">IncomingFindRequestFilter</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
+  <span class="c1">-- First display the content of the C-Find query</span>
+  <span class="n">PrintRecursive</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+  <span class="n">PrintRecursive</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+
+  <span class="c1">-- Remove the &quot;PrivateCreator&quot; tag from the query</span>
+  <span class="kd">local</span> <span class="n">v</span> <span class="o">=</span> <span class="n">query</span>
+  <span class="n">v</span><span class="p">[</span><span class="s1">&#39;5555,0010&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">nil</span>
+
+  <span class="kr">return</span> <span class="n">v</span>
+<span class="kr">end</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">origin</span></code> argument contains information about which modality has
+issued the request.</p>
+<p>Note that, as of Orthanc 1.2.1, the <code class="docutils literal notranslate"><span class="pre">IncomingFindRequestFilter</span></code> is
+not applied to C-Find requests targeting the Modality Worklists plugin.
+This might be fixed in a <a class="reference external" href="https://bitbucket.org/sjodogne/orthanc/issues/57/c-find-matching-refactoring-required">future release</a>.</p>
+<p>Similarly, the callback <code class="docutils literal notranslate"><span class="pre">OutgoingFindRequestFilter(query,</span> <span class="pre">modality)</span></code>
+is invoked whenever Orthanc acts as a C-Find SCU, which gives the
+opportunity to dynamically fix outgoing C-Find requests before they
+are actually sent to the queried modality. For instance, here is a
+sample Lua callback that would replace asterisk wildcards (i.e. <code class="docutils literal notranslate"><span class="pre">*</span></code>)
+by an empty string for any query/retrieve issued by Orthanc (including
+from Orthanc Explorer):</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">OutgoingFindRequestFilter</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">modality</span><span class="p">)</span>
+  <span class="kr">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="kr">do</span>
+    <span class="kr">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span> <span class="kr">then</span>
+      <span class="n">query</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="kr">end</span>
+  <span class="kr">end</span>
+
+  <span class="kr">return</span> <span class="n">query</span>
+<span class="kr">end</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

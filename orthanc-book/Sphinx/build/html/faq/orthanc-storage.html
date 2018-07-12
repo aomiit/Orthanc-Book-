@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>How does Orthanc store its database? &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to authenticate users?" href="authentication.html" />
+    <link rel="prev" title="Interfacing with Matlab and Octave" href="matlab.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="how-does-orthanc-store-its-database">
+<span id="orthanc-storage"></span><h1>How does Orthanc store its database?<a class="headerlink" href="#how-does-orthanc-store-its-database" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="storage-folder">
+<h2>Storage folder<a class="headerlink" href="#storage-folder" title="Permalink to this headline">¶</a></h2>
+<p><strong>By default</strong> (i.e. if no database plugin such as <a class="reference internal" href="../plugins/postgresql.html#postgresql"><span class="std std-ref">PostgreSQL</span></a> is used), Orthanc stores all the DICOM files it receives
+in a folder called <code class="docutils literal notranslate"><span class="pre">OrthancStorage</span></code> on the filesystem. Orthanc also
+associates each incoming DICOM file with a JSON file that summarizes
+all its DICOM tags, which speeds up subsequent processing by avoiding
+a costly DICOM parsing.</p>
+<p>More generally, the <code class="docutils literal notranslate"><span class="pre">OrthancStorage</span></code> folder contains a set of
+so-called <strong>attachments</strong>, that may correspond to either a DICOM file,
+a JSON file, or any user-defined file. Internally, each attachment is
+automatically associated with an <a class="reference external" href="https://en.wikipedia.org/wiki/Universally_unique_identifier">universally unique identifier (UUID)</a>.
+Orthanc can be configured to compress these files on-the-fly in order
+to save disk space (cf. the <code class="docutils literal notranslate"><span class="pre">StorageCompression</span></code> <a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">configuration
+option</span></a>).</p>
+<p>To reduce the number of files in a single directory (which is
+something that some operating systems might not like), a 3-level
+hierarchy of directories is created to store the attachments: The
+first two hexadecimal characters of the UUID give the first-level
+folder, and the two next characters give the second-level folder.</p>
+</div>
+<div class="section" id="sqlite-index">
+<h2>SQLite index<a class="headerlink" href="#sqlite-index" title="Permalink to this headline">¶</a></h2>
+<p>Inside the same <code class="docutils literal notranslate"><span class="pre">OrthancStorage</span></code> folder, Orthanc maintains a <a class="reference external" href="https://en.wikipedia.org/wiki/SQLite">SQLite
+database</a> called <code class="docutils literal notranslate"><span class="pre">index</span></code>
+that <strong>indexes</strong> all these attachments. The database records, for each
+attachment, its compression method, and its MD5 hashes before and
+after compression in order to detect disk corruption (cf. the
+<code class="docutils literal notranslate"><span class="pre">StoreMD5ForAttachments</span></code> <a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">configuration option</span></a>).</p>
+<p>One attachment must be associated with one <a class="reference internal" href="../dicom-guide.html#model-world"><span class="std std-ref">DICOM resource</span></a> (patient, study, series, or instance). Incoming DICOM
+files and associated JSON summary are associated with one
+instance-level resource, but user-defined attachments can be
+associated with any kind of resource.</p>
+<p>Given one DICOM resource, all of its child attachments are identified
+by a number between 0 and 65535. Identifiers &lt;= 1023 are reserved for
+the Orthanc core, whereas identifiers &gt;= 1024 can be user-defined for
+external applications.</p>
+</div>
+<div class="section" id="direct-access">
+<h2>Direct access<a class="headerlink" href="#direct-access" title="Permalink to this headline">¶</a></h2>
+<p>Directly accessing the content of the <code class="docutils literal notranslate"><span class="pre">OrthancStorage</span></code> folder and
+the content of the SQLite database is strongly discouraged for several
+reasons:</p>
+<ul class="simple">
+<li>This internal organization is only true when no database plugin is
+used (e.g. the <a class="reference internal" href="../plugins/postgresql.html#postgresql"><span class="std std-ref">PostgreSQL plugin</span></a> can be
+configured to store the attachments inside a database).</li>
+<li>Orthanc can be configured to compress the attachments before writing
+them on the disk (cf. the <code class="docutils literal notranslate"><span class="pre">StorageCompression</span></code> option).</li>
+<li>By directly reading the content of <code class="docutils literal notranslate"><span class="pre">OrthancStorage</span></code>, you bypass
+all the locking mechanisms used by Orthanc, which might result in
+data corruption.</li>
+<li>One SQLite database should be accessed by at most one process at any
+time to avoid any problem (e.g. with NFS filesystems), for reasons
+that are <a class="reference external" href="https://www.sqlite.org/faq.html#q5">explained in the SQLite FAQ</a>. Orthanc will stop if it
+receives the <code class="docutils literal notranslate"><span class="pre">SQLITE_BUSY</span></code> status.</li>
+</ul>
+<p>As a consequence, it is <strong>HIGHLY recommended NOT to directly access</strong>
+the <code class="docutils literal notranslate"><span class="pre">OrthancStorage</span></code> folder and the SQLite database. Use the
+<a class="reference internal" href="../users/rest.html#rest"><span class="std std-ref">REST API</span></a> instead, which contains primitives to access
+the attachments (cf. the <code class="docutils literal notranslate"><span class="pre">.../attachments/...</span></code> URIs).</p>
+<p>The only exception to this rule is for <strong>read-only access when Orthanc
+is stopped</strong>, e.g. as a part of a <a class="reference internal" href="../users/backup.html#backup"><span class="std std-ref">backup</span></a> or
+<a class="reference internal" href="../users/replication.html#replication"><span class="std std-ref">upgrade/replication</span></a> process.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

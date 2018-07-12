@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Terminology of advanced features &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Finding samples for the REST API" href="rest-samples.html" />
+    <link rel="prev" title="Compiling Orthanc" href="compiling.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="terminology-of-advanced-features">
+<h1>Terminology of advanced features<a class="headerlink" href="#terminology-of-advanced-features" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="peers">
+<span id="id1"></span><h2>Peers<a class="headerlink" href="#peers" title="Permalink to this headline">¶</a></h2>
+<p>An “Orthanc peer” is another instance of Orthanc, possibly running on
+a remote computer.</p>
+<p>Contrarily to a “modality”, it is possible to communicate with a peer
+through the <strong>HTTP/HTTPS protocol</strong> (i.e. through the REST API of
+Orthanc), and not through the DICOM protocol. This implies a much
+easier configuration: It is only required to know the URL, the
+username and the password to communicate with an Orthanc peer. This
+contrasts with DICOM query/retrieve, that is quite complex and that
+involves a lot of pitfalls (cf. the FAQ entry about <a class="reference internal" href="dicom.html#dicom"><span class="std std-ref">troubleshooting
+DICOM communications</span></a>) that can be bypassed if using HTTP.</p>
+<p>Furthermore, as HTTP(S) communications are generally not blocked by
+firewalls (contrarily to the DICOM protocol that is inherently an
+Intranet protocol and that often requires the setup of VPN tunnels),
+it is much easier to setup communications of medical images through
+the Internet with Orthanc peers.</p>
+</div>
+<div class="section" id="recycling-protection">
+<span id="recycling"></span><h2>Recycling/Protection<a class="headerlink" href="#recycling-protection" title="Permalink to this headline">¶</a></h2>
+<p>Because of its focus on low-end computers, Orthanc implements <strong>disk
+space recycling</strong>: The patient that has been stored for the longest
+time inside Orthanc can be automatically deleted when the disk space
+used by Orthanc grows above a threshold, or when the number of stored
+patients grows above a threshold. This feature enables the automated
+control of the disk space dedicated to Orthanc.  Note that pushing a
+new study for an existing patient will not change its position in the
+recycling order.</p>
+<p>Recycling is controlled by the <code class="docutils literal notranslate"><span class="pre">MaximumStorageSize</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">MaximumPatientCount</span></code> options in the <a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">Orthanc configuration
+file</span></a>.  Setting both these values to 0 will disable
+recycling.</p>
+<p>It is possible to prevent important data from being automatically
+recycled. This mechanism is called <strong>protection</strong>. Each patient can be
+individually protected against recycling by using the
+<code class="docutils literal notranslate"><span class="pre">Unprotected/Protected</span></code> switch that is available from Orthanc
+Explorer.</p>
+<p>Note that protection is only available at the patient level. It
+protects all the studies/series/instances of the patient against
+recycling. The rationale is that we think it is important to keep
+available all the data related to one patient. Unwillingly losing a
+study/series that is part of the same patient might lead to a loss in
+consistency with respect to the medical history of this patient.</p>
+</div>
+<div class="section" id="compression">
+<span id="id2"></span><h2>Compression<a class="headerlink" href="#compression" title="Permalink to this headline">¶</a></h2>
+<p>If your disk space is limited, besides <a class="reference internal" href="#recycling"><span class="std std-ref">Recycling/Protection</span></a>, you should
+also consider using <strong>disk space compression</strong>. When compression is
+enabled, Orthanc compresses the incoming DICOM instances on-the-fly
+before writing them to the filesystem, using <a class="reference external" href="https://en.wikipedia.org/wiki/Zlib">zlib</a>. This is useful, because the
+images are often stored as raw, uncompressed arrays in DICOM
+instances: The size of a typical DICOM instance can hopefully be
+divided by a factor 2 through lossless compression. This compression
+process is transparent to the user, as Orthanc automatically
+decompresses the file before sending it back to the external world.</p>
+<p>Compression is controlled by the <code class="docutils literal notranslate"><span class="pre">StorageCompression</span></code> option in the
+<a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">Orthanc configuration file</span></a>.</p>
+</div>
+<div class="section" id="metadata-attachments">
+<span id="metadata"></span><h2>Metadata &amp; attachments<a class="headerlink" href="#metadata-attachments" title="Permalink to this headline">¶</a></h2>
+<p>Metadata consists in an <strong>associative key-value array</strong> (mapping a
+integer key in the range [0,65535] to a string value) that is
+associated with each <a class="reference internal" href="orthanc-ids.html#orthanc-ids"><span class="std std-ref">DICOM resource</span></a> stored inside
+Orthanc (may it be a patient, a study, a series or a DICOM
+instance). Metadata can be either referred to using the integer key,
+or using a symbolic name (if configured).  Metadata records
+information that is not readily available in the DICOM tags.</p>
+<p>In spirit, the metadata mechanism is similar to the <a class="reference internal" href="orthanc-storage.html#orthanc-storage"><span class="std std-ref">attachment
+mechanism</span></a>. However, metadata is stored directly
+inside the database, whereas attachments are stored as separate files
+on the filesystem (the database only stores a reference to the
+attachments). Choosing between metadata and attachments is a matter of
+trade-off: Metadata must be kept small (as a rule of thumb, under 1KB)
+and used if fast access is needed, whereas attachments can be used to
+store arbitrarily large piece of data.</p>
+<p>Also note that metadata and attachments are only available for
+resources stored inside Orthanc. Once one DICOM instance leaves the
+Orthanc ecosystem, its associated metadata and attachments are lost.</p>
+<div class="section" id="core-metadata">
+<h3>Core metadata<a class="headerlink" href="#core-metadata" title="Permalink to this headline">¶</a></h3>
+<p>Here are the main metadata handled by the Orthanc core:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">ReceptionDate</span></code> records when a DICOM instance was received by
+Orthanc. Similarly, <code class="docutils literal notranslate"><span class="pre">LastUpdate</span></code> records, for each
+patient/study/series, the last time a DICOM instance was added to
+this resource.</li>
+<li><code class="docutils literal notranslate"><span class="pre">RemoteAet</span></code> records the AET of the modality that has sent some
+DICOM instance to Orthanc.</li>
+<li><code class="docutils literal notranslate"><span class="pre">ModifiedFrom</span></code> and <code class="docutils literal notranslate"><span class="pre">AnonymizedFrom</span></code> hold from which original
+resource, a resource was modified or anonymized. The presence of
+this metadata indicates that the resource is the result of a
+modification or anonymization that was carried on by Orthanc.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Origin</span></code> records through which mechanism the instance was received
+by Orthanc (may be <code class="docutils literal notranslate"><span class="pre">Unknown</span></code>, <code class="docutils literal notranslate"><span class="pre">DicomProtocol</span></code>, <code class="docutils literal notranslate"><span class="pre">RestApi</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Plugins</span></code>, or <code class="docutils literal notranslate"><span class="pre">Lua</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">IndexInSeries</span></code> records the expected index of a DICOM instance
+inside its parent series. Conversely, <code class="docutils literal notranslate"><span class="pre">ExpectedNumberOfInstances</span></code>
+associates to each series, the number of DICOM instances this series
+is expected to contain.</li>
+<li>Starting with Orthanc 1.2.0, <code class="docutils literal notranslate"><span class="pre">TransferSyntax</span></code> and <code class="docutils literal notranslate"><span class="pre">SopClassUid</span></code>
+respectively stores the transfer syntax UID and the SOP class UID of
+DICOM instances, in order to speed up the access to this
+information.</li>
+</ul>
+<p>Metadata listed above are set privately by the Orthanc core. They are
+<strong>read-only</strong> from the perspective of the end user, as Orthanc
+internally relies on them.</p>
+</div>
+<div class="section" id="user-defined-metadata">
+<h3>User-defined metadata<a class="headerlink" href="#user-defined-metadata" title="Permalink to this headline">¶</a></h3>
+<p>The metadata described above where handled by the core of Orthanc.
+Orthanc users are however allowed to define their own <strong>user-defined
+metadata</strong>. Such metadata are associated with an integer key that is
+greater or equal to 1024 (whereas keys below 1023 are reserved for
+core metadata).</p>
+<p>You can associate a symbolic name to user-defined metadata using the
+<code class="docutils literal notranslate"><span class="pre">UserMetadata</span></code> option inside the <a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">configuration of Orthanc</span></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;UserMetadata&quot;</span> <span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;SampleMetaData1&quot;</span> <span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+  <span class="s2">&quot;SampleMetaData2&quot;</span> <span class="p">:</span> <span class="mi">1025</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="accessing-metadata">
+<h3>Accessing metadata<a class="headerlink" href="#accessing-metadata" title="Permalink to this headline">¶</a></h3>
+<p>Metadata associated with one DICOM resource can be accessed through
+the <a class="reference internal" href="../users/rest.html#rest"><span class="std std-ref">REST API</span></a>, for instance:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e/metadata
+$ curl http://localhost:8042/instances/cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e/metadata/RemoteAet
+$ curl http://localhost:8042/instances/cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e/metadata/SampleMetaData1
+</pre></div>
+</div>
+<p>User-defined metadata can be modified by issuing a HTTP PUT against
+the REST API:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e/metadata/1024 -X PUT -d <span class="s1">&#39;hello&#39;</span>
+$ curl http://localhost:8042/instances/cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e/metadata/1024
+hello
+</pre></div>
+</div>
+</div>
+<div class="section" id="user-defined-attachments">
+<span id="attachments"></span><h3>User-defined attachments<a class="headerlink" href="#user-defined-attachments" title="Permalink to this headline">¶</a></h3>
+<p>Orthanc users are allowed to define their own <strong>user-defined attachments</strong>.
+Such attachments are associated with an integer key that is
+greater or equal to 1024 (whereas keys below 1023 are reserved for
+core attachments).</p>
+<p>You can associate a symbolic name to user-defined attachments using the
+<code class="docutils literal notranslate"><span class="pre">UserContentType</span></code> option inside the <a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">configuration of Orthanc</span></a>.  Optionally, the user may specify a MIME content type
+for the attachment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;UserContentType&quot;</span> : <span class="o">{</span>
+  <span class="s2">&quot;samplePdf&quot;</span> : <span class="o">[</span><span class="m">1024</span>, <span class="s2">&quot;application/pdf&quot;</span><span class="o">]</span>,
+  <span class="s2">&quot;sampleJson&quot;</span> : <span class="o">[</span><span class="m">1025</span>, <span class="s2">&quot;application/json&quot;</span><span class="o">]</span>,
+  <span class="s2">&quot;sampleRaw&quot;</span> : <span class="m">1026</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="accessing-attachments">
+<h3>Accessing attachments<a class="headerlink" href="#accessing-attachments" title="Permalink to this headline">¶</a></h3>
+<p>Attachments associated with one DICOM resource can be accessed through
+the <a class="reference internal" href="../users/rest.html#rest"><span class="std std-ref">REST API</span></a>, for instance:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e/attachments/samplePdf/data
+$ curl http://localhost:8042/instances/cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e/attachments/sampleJson/data
+</pre></div>
+</div>
+<p>User-defined attachments can be modified by issuing a HTTP PUT against
+the REST API:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl http://localhost:8042/instances/cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e/attachments/samplePdf -X PUT --data-binary @sample.pdf
+$ curl http://localhost:8042/instances/cb855110-5f4da420-ec9dc9cb-2af6a9bb-dcbd180e/attachments/sampleRaw -X PUT -d <span class="s1">&#39;raw data&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="central-registry-of-metadata-and-attachments">
+<span id="registry"></span><h2>Central registry of metadata and attachments<a class="headerlink" href="#central-registry-of-metadata-and-attachments" title="Permalink to this headline">¶</a></h2>
+<p>Obviously, one must pay attention to the fact that different
+applications might use the same key to store different user-defined
+<a class="reference internal" href="#metadata"><span class="std std-ref">metadata</span></a>, which might result in incompatibilities
+between such applications. Similarly, incompatibilities might show up
+for user-defined <a class="reference internal" href="orthanc-storage.html#orthanc-storage"><span class="std std-ref">attachments</span></a>.</p>
+<p>Developers of applications/plugins that use user-defined metadata or
+attachments are therefore kindly invited to complete the <strong>central
+registry</strong> below:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">Metadata</span> <span class="pre">4200</span></code> is used by the plugin for <a class="reference internal" href="../plugins/wsi.html#wsi"><span class="std std-ref">whole-slide imaging</span></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Attachment</span> <span class="pre">9998</span></code> is used by the <a class="reference external" href="https://bitbucket.org/osimis/osimis-webviewer-plugin">Osimis WebViewer plugin</a> to store instance information.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Attachment</span> <span class="pre">9999</span></code> is used by the <a class="reference external" href="https://bitbucket.org/osimis/osimis-webviewer-plugin">Osimis WebViewer plugin</a> to store annotations.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Attachments</span> <span class="pre">10000-13999</span></code> are used by the <a class="reference external" href="https://bitbucket.org/osimis/osimis-webviewer-plugin">Osimis WebViewer plugin</a> to store reduced quality images.</li>
+</ul>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

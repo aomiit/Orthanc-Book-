@@ -1,0 +1,115 @@
+.. highlight:: bash
+.. _replication:
+
+复制和升级
+=======================
+
+本页面解释如何复制一个实例的内容Orthanc的另一个实例。这对 **upgrade**
+:ref:`数据库模式的版本 <db-versioning>`, 或者创建 **DICOM服务器镜像**
+是有用处的。
+
+
+升级数据库模式
+---------------------------
+
+As explained :ref:`elsewhere in the Orthanc Book <db-versioning>`,
+successive versions of Orthanc might use a different version of the
+database schema. If this happens, Orthanc will refuse to start (with
+an explicit message in its :ref:`logs <log>`), to let the user decides
+whether she actually wants to upgrade the database.
+
+At this point, the user could indeed choose to modify its
+:ref:`configuration file <configuration>` in order to create a new
+database elsewhere on the filesystem (if using the default SQLite
+backend), or on the database management system (e.g. if using
+:ref:`PostgreSQL <postgresql>`). This is important to let the user
+experiment a new version of Orthanc, while keeping the older version
+up and running.
+
+If you decide to upgrade the database schema, you have to apply the
+following 3 steps:
+
+1. If not done yet, stop the running Orthanc service:
+
+   * Under Microsoft Windows, use the `services control panel
+     <https://en.wikipedia.org/wiki/Windows_service>`__.
+   * Under Debian, use ``sudo /etc/init.d/orthanc stop``.
+
+2. Manually call Orthanc with the ``--upgrade`` command-line option,
+   and point to your configuration file:
+
+   * Under Microsoft Windows, ``Orthanc.exe c:/Orthanc/ --upgrade``.
+   * Under Debian, use ``sudo /usr/sbin/Orthanc /etc/orthanc/ --upgrade``.
+
+3. Once the upgrade process is over, restart the Orthanc service:
+
+   * Under Microsoft Windows, use the `services control panel
+     <https://en.wikipedia.org/wiki/Windows_service>`__.
+   * Under Debian, use ``sudo /etc/init.d/orthanc start``.
+
+**Important remarks:**
+
+* Orthanc is now considered as **stable**, which means that no upgrade
+  in the database schema should occur in the near future.
+* Depending on the size of the Orthanc database, upgrading the
+  database schema might take time, as this operation implies
+  re-reading all the DICOM instances from the disk.
+* In the case of the official Debian and Fedora packages, the default
+  location of the database changes with the version of its schema.
+  For instance, DB schema version 6 will be stored in
+  ``/var/lib/orthanc/db-v6/``. If upgrading the package (and if the
+  configuration files are purged), a new database will automatically
+  be created on the disk. Old data can be recovered either by changing
+  the configuration in ``/etc/orthanc/`` to point to the previous
+  location of the database then using ``--upgrade`` as written above,
+  or by using the instructions for replication below.
+
+
+直接访问文件系统
+-------------------------------
+
+The most direct way to replicate an instance of Orthanc consists in
+using the `ImportDicomFiles
+<https://bitbucket.org/sjodogne/orthanc/src/default/Resources/Samples/ImportDicomFiles/ImportDicomFiles.py>`_
+script of the Orthanc distribution. For instance, the following
+command would recursively explore the content of the
+``OrthancStorage`` folder (where Orthanc stores its DICOM files by
+default), and send each DICOM file inside this folder to the instance
+of Orthanc whose REST API is listening on
+``http://192.168.0.2:8042``::
+
+    $ python ImportDicomFiles.py 192.168.0.2 8042 OrthancStorage
+
+This method will only succeed if:
+
+* The source Orthanc uses the default SQLite back-end of Orthanc (and
+  not the `PostgreSQL plugin
+  <http://www.orthanc-server.com/static.php?page=postgresql>`_, for
+  instance),
+* You have command-line access to the source Orthanc, and
+* The transparent :ref:`compression` of the DICOM instances is
+  disabled (cf. option ``StorageCompression`` in the
+  :ref:`configuration file <configuration>`).
+
+**Important remark:** Because of :ref:`the way Orthanc stores its
+database <orthanc-storage>` on the filesystem, it is *entirely normal*
+that the ``ImportDicomFiles.py`` script ends by saying that only half
+of the DICOM files were properly sent. This is because the JSON
+summaries are not DICOM files, and are thus rejected by the target
+Orthanc server. More information are available `on the discussion
+group
+<https://groups.google.com/d/msg/orthanc-users/Zlhtcpo76qQ/tp8EqaRCAQAJ>`__.
+
+
+通用复制
+-------------------
+
+If you cannot use the first method, you can use the `Replicate
+<https://bitbucket.org/sjodogne/orthanc/src/default/Resources/Samples/Python/Replicate.py>`_
+script of the Orthanc distribution. This script will use the REST API
+of both the source and target instances of Orthanc. For instance::
+
+    $ python Replicate.py http://orthanc:password@localhost:8042/ http://192.168.0.2/
+
+Obviously, contrarily to the first method, the source instance of
+Orthanc must be up and running during the replication.

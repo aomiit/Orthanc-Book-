@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Orthanc Explorer is not user-friendly enough for my use &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Supported DICOM images" href="supported-images.html" />
+    <link rel="prev" title="Software X from vendor Y is not compatible with Orthanc" href="proprietary.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="orthanc-explorer-is-not-user-friendly-enough-for-my-use">
+<span id="improving-interface"></span><h1>Orthanc Explorer is not user-friendly enough for my use<a class="headerlink" href="#orthanc-explorer-is-not-user-friendly-enough-for-my-use" title="Permalink to this headline">¶</a></h1>
+<p>Orthanc is designed as a lightweight service for medical imaging,
+where the word <em>service</em> must be understood in the sense of
+<a class="reference external" href="https://en.wikipedia.org/wiki/Service-oriented_architecture">service-oriented architectures</a>.  As
+a consequence, Orthanc is conceived as a robust back-end server
+(command-line) that aims to provide the most simple and generic
+support of DICOM. To state it differently, <strong>the primary focus of the
+Orthanc project is not on the user interface</strong>.</p>
+<p>However, Orthanc comes out-of-the-box with <a class="reference internal" href="../users/cookbook.html#orthanc-explorer"><span class="std std-ref">Orthanc Explorer</span></a>, its default Web user interface. <strong>Orthanc
+Explorer is designed for administrative, low-level purpose.</strong> It is
+also used by the development team to test the features of Orthanc as
+they get introduced in the REST API. Orthanc Explorer is mainly
+targeted towards an English-speaking technical audience (notably
+system/network engineers, <a class="reference external" href="https://en.wikipedia.org/wiki/Picture_archiving_and_communication_system">PACS</a>
+managers, medical physicists, and researchers).</p>
+<p><strong>Non-technical audience</strong> (physicists, patients, administrative
+staff…) <strong>might expect an user interface that is more user-friendly
+than Orthanc Explorer</strong>, and/or that integrates more features (such as
+language translations, sorting resources, access control lists,
+tagging images, beautiful layout, tunable anonymization, modification
+of instances, paging if many patients, handling of timeouts,
+login/logout…). If you need such a more advanced <a class="reference external" href="https://en.wikipedia.org/wiki/User_experience">user experience</a> so that Orthanc
+better fits your clinical workflow, you will have to develop a
+separate, custom Web interface on the top of the <a class="reference internal" href="../users/rest.html#rest"><span class="std std-ref">Orthanc的REST API</span></a>, maybe as
+a <a class="reference external" href="https://github.com/jodogne/OrthancContributed/tree/master/Plugins">plugin</a>. Any
+front-end Web developer could take care of this task using well-known
+JavaScript frameworks (such as Meteor, AngularJS, Ember.js…).</p>
+<p>It is possible that an official plugin that provides a more advanced
+user interface will be developed in the future (provided we find
+funding for this development). In the meantime, you can also contact a
+company that provides <strong>commercial support on the top of Orthanc</strong> and
+that might have developed an advanced user interface. Currently,
+<a class="reference external" href="http://osimis.io/">Osimis</a> is the only company ensuring such
+corporate services, but others might show up in the future. A <a class="reference external" href="http://www.orthanc-server.com/orthanc-pro.php">contact
+form</a> is available on
+the official Web page of Orthanc.</p>
+<p><strong>Update (2017-10-03):</strong> A team of Master students from <a class="reference external" href="https://www.uliege.be/">ULiège</a> is currently working on creating a
+revamped version of Orthanc Explorer. You can get in touch with them
+on the <a class="reference external" href="https://groups.google.com/d/msg/orthanc-users/oOyKTmfs-J0/B6eyBJcvCAAJ">public discussion forum</a>.</p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>

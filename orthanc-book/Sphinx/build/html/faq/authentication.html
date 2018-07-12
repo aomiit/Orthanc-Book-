@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>How to authenticate users? &#8212; Orthanc之书  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Why “Orthanc”?" href="why-orthanc.html" />
+    <link rel="prev" title="How does Orthanc store its database?" href="orthanc-storage.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Orthanc之书</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">内容 <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../users.html">用户手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dicom-guide.html">通过Orthanc理解DICOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">插件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">开发者手册</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations.html">集成</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../faq.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">对Orthanc的贡献</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="how-to-authenticate-users">
+<span id="authentication"></span><h1>How to authenticate users?<a class="headerlink" href="#how-to-authenticate-users" title="Permalink to this headline">¶</a></h1>
+<p>Out of the box, the embedded Web server of Orthanc supports <a class="reference external" href="https://en.wikipedia.org/wiki/Basic_access_authentication">HTTP
+Basic access authentication</a>. To
+configure user authentication for Orthanc, make sure to properly set
+the following <a class="reference internal" href="../users/configuration.html#configuration"><span class="std std-ref">configuration options</span></a>:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">RemoteAccessAllowed</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">AuthenticationEnabled</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</li>
+<li>In <code class="docutils literal notranslate"><span class="pre">RegisteredUsers</span></code>, assign a username and a password to all your
+users.</li>
+</ul>
+<p>Once a user has logged in, she will have full access, in read-write
+mode, to all the features offered by the REST API of Orthanc. This
+built-in mechanism might be of limited usefulness in enterprise
+scenarios, for which you would need features such as:</p>
+<ul class="simple">
+<li>Fine-grained access to the REST resources (e.g. restrict the URIs
+that are visible per user).</li>
+<li>Read-only access (i.e. limit full access to a short list of trusted
+system administrators).</li>
+<li>Integration with an LDAP server.</li>
+<li>Handling groups of users.</li>
+<li>…</li>
+</ul>
+<p>Depending on your scenario, you can consider the following options:</p>
+<ul class="simple">
+<li>Implement a Lua callback to <a class="reference internal" href="../users/lua.html#lua-filter-rest"><span class="std std-ref">filter incoming REST requests</span></a>. This is the most simple solution, and would
+notably allow you to implement read-only access or, more generally,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Access_control_list">access control lists</a>.</li>
+<li>Develop a <a class="reference internal" href="../developers/creating-plugins.html#creating-plugins"><span class="std std-ref">C/C++ plugin</span></a> that uses the
+<code class="docutils literal notranslate"><span class="pre">OrthancPluginRegisterIncomingHttpRequestFilter()</span></code>.  This solution
+is potentially useful if you wish to integrate with an LDAP server.</li>
+<li>Use Orthanc as a reverse proxy (e.g. behind <a class="reference internal" href="nginx.html#nginx"><span class="std std-ref">nginx</span></a>,
+<a class="reference internal" href="apache.html#apache"><span class="std std-ref">Apache</span></a>, or <a class="reference internal" href="iis.html#iis"><span class="std std-ref">Microsoft IIS</span></a>), and use the
+authentication mechanisms of the main Web server.</li>
+<li>Create a <a class="reference internal" href="improving-interface.html#improving-interface"><span class="std std-ref">new Web user interface</span></a> on the
+top of the REST API of Orthanc, using your favorite framework
+(Meteor, AngularJS, Ember.js, Node.js…).</li>
+</ul>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">回到顶上</a>
+      
+    </p>
+    <p>
+
+      &copy; Copyright 2015-2018, University Hospital of Liège and Osimis, Belgium<br/>
+      The Orthanc Book 许可基于
+      <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative 
+        Commons CC-BY-SA 4.0</a>.<br/>
+      使用<a href="http://sphinx-doc.org/">Sphinx</a>1.7.5创建.<br/>
+      由<a href="http://www.aomiit.com">AOMIIT</a>团队翻译<br/>
+      <li><a href="http://www.miibeian.gov.cn/">蜀ICP备14004673号</a></li>
+     </p>
+  </div>
+</footer>
+
+  </body>
+</html>
