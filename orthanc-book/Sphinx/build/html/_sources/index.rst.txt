@@ -4,8 +4,7 @@
 .. image:: _static/orthanc.png
            :align: right
 
-这个网站是Orthanc文档。如果您想访问更多有关Orthoc的信息，请浏览`官方网站
-<http://www.orthanc-server.com>`_.
+这个网站是Orthanc文档。如果您想访问更多有关Orthanc的信息，请浏览 "`官方网站 <http://www.orthanc-server.com>`__" 。
 
 
 内容
